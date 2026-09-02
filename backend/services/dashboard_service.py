@@ -6,6 +6,9 @@ from services.analytics_service import (
     get_performance,
     get_summary,
 )
+from services.performance_service import (
+    get_portfolio_xirr,
+)
 
 
 def get_dashboard(
@@ -20,6 +23,10 @@ def get_dashboard(
     )
 
     performance = get_performance(
+        db
+    )
+
+    xirr_data = get_portfolio_xirr(
         db
     )
 
@@ -115,6 +122,9 @@ def get_dashboard(
         ],
         "total_return_percent": summary[
             "total_return_percent"
+        ],
+        "xirr": xirr_data[
+            "xirr"
         ],
         "best_position": summary[
             "best_position"

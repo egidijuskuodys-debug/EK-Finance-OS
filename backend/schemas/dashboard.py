@@ -32,6 +32,8 @@ class DashboardResponse(BaseModel):
     total_profit: float
     total_return_percent: float
 
+    xirr: float | None
+
     best_position: str | None
     worst_position: str | None
 
