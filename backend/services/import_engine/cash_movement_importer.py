@@ -67,6 +67,16 @@ def import_cash_movements(
             skipped += 1
             continue
 
+        fx_rate = movement_data.get(
+            "fx_rate"
+        )
+
+        if fx_rate is not None:
+            fx_rate = float(fx_rate)
+
+            if fx_rate <= 0:
+                fx_rate = None
+
         cash_movement = CashMovement(
             broker=movement_data["broker"],
             movement_type=(
@@ -80,6 +90,7 @@ def import_cash_movements(
             currency=movement_data[
                 "currency"
             ],
+            fx_rate=fx_rate,
             movement_date=(
                 movement_data[
                     "movement_date"

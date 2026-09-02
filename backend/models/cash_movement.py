@@ -39,6 +39,11 @@ class CashMovement(Base):
         nullable=False,
     )
 
+    fx_rate = Column(
+        Float,
+        nullable=True,
+    )
+
     movement_date = Column(
         Date,
         nullable=False,

@@ -12,6 +12,7 @@ from models import (
 )
 
 from routers.analytics_router import router as analytics_router
+from routers.cash_flow_router import router as cash_flow_router
 from routers.dashboard_router import router as dashboard_router
 from routers.dividend_router import router as dividend_router
 from routers.import_history_router import (
@@ -74,3 +75,9 @@ app.include_router(dividend_router)
 app.include_router(import_router)
 
 app.include_router(import_history_router)
+
+app.include_router(
+    cash_flow_router,
+    prefix="/cash-flow",
+    tags=["Cash Flow"],
+)
