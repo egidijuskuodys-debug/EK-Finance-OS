@@ -29,6 +29,16 @@ postgres_data/
 # SQLite
 *.db
 
+# Broker / financial import files
+backend/*.csv
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Project helper files
+project_tree.txt
+
 # OS files
 .DS_Store
 Thumbs.db
