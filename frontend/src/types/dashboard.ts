@@ -29,6 +29,8 @@ export interface DashboardData {
   total_profit: number
   total_return_percent: number
 
+  xirr: number | null
+
   best_position: string | null
   worst_position: string | null
 

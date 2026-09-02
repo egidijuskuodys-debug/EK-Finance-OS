@@ -260,6 +260,37 @@ function DashboardPage() {
             )}
           </div>
         </article>
+
+
+        <article className="kpi-card">
+          <div className="kpi-label">
+            XIRR
+          </div>
+
+          <div
+            className={
+              `kpi-value ${
+                dashboard.xirr !== null
+                  ? getValueClass(
+                      dashboard.xirr,
+                    )
+                  : ''
+              }`
+            }
+          >
+            {
+              dashboard.xirr !== null
+                ? formatPercent(
+                    dashboard.xirr,
+                  )
+                : '—'
+            }
+          </div>
+
+          <div className="kpi-subvalue">
+            Annualized return
+          </div>
+        </article>
       </section>
 
 
