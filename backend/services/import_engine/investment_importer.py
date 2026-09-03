@@ -5,18 +5,21 @@ from sqlalchemy.orm import Session
 
 from models.investment import Investment
 from repositories import investment_repository
+from services.market_ticker_resolver import (
+    resolve_market_ticker,
+)
 
 
 def update_existing_investment_metadata(
     investment: Investment,
     investment_data: dict[str, Any],
 ) -> None:
-    market_ticker = investment_data.get(
-        "market_ticker"
+    investment.market_ticker = (
+        resolve_market_ticker(
+            broker=investment.broker,
+            ticker=investment.ticker,
+        )
     )
-
-    if market_ticker:
-        investment.market_ticker = market_ticker
 
     asset_type = investment_data.get(
         "asset_type"
@@ -61,6 +64,13 @@ def create_or_get_investment(
 ):
     broker = investment_data["broker"]
     ticker = investment_data["ticker"]
+
+    market_ticker = (
+        resolve_market_ticker(
+            broker=broker,
+            ticker=ticker,
+        )
+    )
 
     existing_investment = (
         investment_repository
@@ -125,10 +135,7 @@ def create_or_get_investment(
             ticker,
         ),
         ticker=ticker,
-        market_ticker=investment_data.get(
-            "market_ticker",
-            ticker,
-        ),
+        market_ticker=market_ticker,
         asset_type=investment_data.get(
             "asset_type",
             "Stock",

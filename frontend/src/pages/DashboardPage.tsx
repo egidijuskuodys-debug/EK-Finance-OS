@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { getDashboard } from '../api/dashboard'
+import PortfolioHistoryChart from '../components/PortfolioHistoryChart'
 import type { DashboardData } from '../types/dashboard'
 
 
@@ -291,6 +292,28 @@ function DashboardPage() {
             Annualized return
           </div>
         </article>
+      </section>
+
+
+      <section className="panel">
+        <div className="panel-header">
+          <div>
+            <h3 className="panel-title">
+              Portfolio market value
+            </h3>
+
+            <p className="panel-subtitle">
+              Historical securities
+              market value in EUR
+            </p>
+          </div>
+        </div>
+
+        <PortfolioHistoryChart
+          currency={
+            dashboard.base_currency
+          }
+        />
       </section>
 
 

@@ -15,6 +15,9 @@ from services.analytics_service import (
 from services.performance_service import (
     get_portfolio_xirr,
 )
+from services.portfolio_history_service import (
+    get_portfolio_history,
+)
 
 
 router = APIRouter(
@@ -49,6 +52,13 @@ def portfolio_xirr(
     db: Session = Depends(get_db),
 ):
     return get_portfolio_xirr(db)
+
+
+@router.get("/portfolio-history")
+def portfolio_history(
+    db: Session = Depends(get_db),
+):
+    return get_portfolio_history(db)
 
 
 @router.get("/dividends/summary")

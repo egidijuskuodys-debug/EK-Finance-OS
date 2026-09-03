@@ -1,4 +1,10 @@
-from sqlalchemy import Column, Integer, String, Float, Date
+from sqlalchemy import (
+    Column,
+    Date,
+    Float,
+    Integer,
+    String,
+)
 from sqlalchemy.orm import relationship
 
 from database.db import Base
@@ -29,7 +35,8 @@ class Investment(Base):
         nullable=False,
     )
 
-    # Simbolis rinkos duomenų tiekėjui (Yahoo Finance)
+    # Simbolis rinkos duomenu tiekejui
+    # (Yahoo Finance)
     market_ticker = Column(
         String(30),
         nullable=False,
@@ -60,7 +67,9 @@ class Investment(Base):
         default="EUR",
     )
 
-    purchase_date = Column(Date)
+    purchase_date = Column(
+        Date,
+    )
 
     transactions = relationship(
         "Transaction",
@@ -72,4 +81,11 @@ class Investment(Base):
         "Dividend",
         back_populates="investment",
         cascade="all, delete-orphan",
+    )
+
+    price_history = relationship(
+        "PriceHistory",
+        back_populates="investment",
+        cascade="all, delete-orphan",
+        order_by="PriceHistory.price_date",
     )
