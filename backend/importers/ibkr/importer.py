@@ -14,6 +14,7 @@ from importers.ibkr.section_reader import (
     read_ibkr_file,
 )
 from importers.ibkr.trades_parser import (
+    parse_forex_cash_movements,
     parse_trades,
 )
 
@@ -82,10 +83,18 @@ class IBKRImporter(BaseImporter):
                 self.file_path
             )
 
+        trade_records = self.sections.get(
+            "Trades",
+            [],
+        )
+
         transactions = parse_trades(
-            self.sections.get(
-                "Trades",
-                [],
+            trade_records
+        )
+
+        forex_cash_movements = (
+            parse_forex_cash_movements(
+                trade_records
             )
         )
 
@@ -96,11 +105,17 @@ class IBKRImporter(BaseImporter):
             )
         )
 
-        cash_movements = parse_cash_movements(
-            self.sections.get(
-                "Deposits & Withdrawals",
-                [],
+        cash_movements = (
+            parse_cash_movements(
+                self.sections.get(
+                    "Deposits & Withdrawals",
+                    [],
+                )
             )
+        )
+
+        cash_movements.extend(
+            forex_cash_movements
         )
 
         positions = parse_positions(

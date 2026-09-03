@@ -176,3 +176,130 @@ def parse_trades(
         )
 
     return transactions
+
+
+def parse_forex_cash_movements(
+    records: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    cash_movements = []
+
+    for record in records:
+        data_discriminator = str(
+            record.get(
+                "DataDiscriminator",
+                "",
+            )
+        ).strip()
+
+        asset_category = str(
+            record.get(
+                "Asset Category",
+                "",
+            )
+        ).strip()
+
+        if data_discriminator != "Order":
+            continue
+
+        if asset_category != "Forex":
+            continue
+
+        symbol = str(
+            record.get(
+                "Symbol",
+                "",
+            )
+        ).strip().upper()
+
+        if "." not in symbol:
+            continue
+
+        base_currency, quote_currency = (
+            symbol.split(".", 1)
+        )
+
+        quantity_signed = parse_number(
+            record.get("Quantity"),
+            "Quantity",
+        )
+
+        proceeds_signed = parse_number(
+            record.get("Proceeds"),
+            "Proceeds",
+        )
+
+        if (
+            quantity_signed == 0
+            and proceeds_signed == 0
+        ):
+            continue
+
+        trade_datetime = parse_ibkr_datetime(
+            record.get("Date/Time")
+        )
+
+        description = (
+            f"IBKR Forex {symbol}"
+        )
+
+        if quantity_signed != 0:
+            cash_movements.append(
+                {
+                    "broker": (
+                        "Interactive Brokers"
+                    ),
+                    "movement_type": (
+                        "FOREX"
+                    ),
+                    "amount": (
+                        quantity_signed
+                    ),
+                    "currency": (
+                        base_currency
+                    ),
+                    "movement_date": (
+                        trade_datetime.date()
+                    ),
+                    "transaction_datetime": (
+                        trade_datetime
+                    ),
+                    "description": (
+                        description
+                    ),
+                    "source_row": record.get(
+                        "_row_number"
+                    ),
+                }
+            )
+
+        if proceeds_signed != 0:
+            cash_movements.append(
+                {
+                    "broker": (
+                        "Interactive Brokers"
+                    ),
+                    "movement_type": (
+                        "FOREX"
+                    ),
+                    "amount": (
+                        proceeds_signed
+                    ),
+                    "currency": (
+                        quote_currency
+                    ),
+                    "movement_date": (
+                        trade_datetime.date()
+                    ),
+                    "transaction_datetime": (
+                        trade_datetime
+                    ),
+                    "description": (
+                        description
+                    ),
+                    "source_row": record.get(
+                        "_row_number"
+                    ),
+                }
+            )
+
+    return cash_movements
