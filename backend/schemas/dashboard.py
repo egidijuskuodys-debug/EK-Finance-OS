@@ -22,6 +22,17 @@ class DashboardResponse(BaseModel):
     portfolio_value: float
     total_invested: float
 
+    securities_value: float
+    cash_balance: float
+    total_wealth: float
+
+    total_deposits: float
+    total_withdrawals: float
+    net_contributions: float
+
+    investment_gain: float
+    investment_gain_percent: float
+
     unrealized_profit: float
     unrealized_profit_percent: float
 

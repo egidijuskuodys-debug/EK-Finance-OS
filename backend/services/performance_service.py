@@ -6,10 +6,14 @@ from repositories import (
     analytics_repository,
     cash_movement_repository,
 )
+from services.cash_balance_service import (
+    get_cash_balance,
+)
 from services.cash_flow_service import (
     DEPOSIT_TYPES,
     WITHDRAWAL_TYPES,
     convert_cash_movement_to_base,
+    get_cash_flow_summary,
     normalize_movement_type,
 )
 from services.fx_service import BASE_CURRENCY
@@ -200,20 +204,76 @@ def get_portfolio_xirr(
                 )
             )
 
-    portfolio_value = (
+    securities_value = (
         analytics_repository
         .get_total_value(
             db
         )
     )
 
+    cash_result = get_cash_balance(
+        db
+    )
+
+    cash_balance = float(
+        cash_result.get(
+            "cash_balance",
+            0.0,
+        )
+    )
+
+    total_wealth = (
+        securities_value
+        + cash_balance
+    )
+
+    cash_flow_summary = (
+        get_cash_flow_summary(
+            db
+        )
+    )
+
+    total_deposits = float(
+        cash_flow_summary.get(
+            "total_deposits",
+            0.0,
+        )
+    )
+
+    total_withdrawals = float(
+        cash_flow_summary.get(
+            "total_withdrawals",
+            0.0,
+        )
+    )
+
+    net_contributions = float(
+        cash_flow_summary.get(
+            "net_contributions",
+            0.0,
+        )
+    )
+
+    investment_gain = (
+        total_wealth
+        - net_contributions
+    )
+
+    if net_contributions > 0:
+        investment_gain_percent = (
+            investment_gain
+            / net_contributions
+        ) * 100
+    else:
+        investment_gain_percent = 0.0
+
     valuation_date = date.today()
 
-    if portfolio_value > 0:
+    if total_wealth > 0:
         cash_flows.append(
             (
                 valuation_date,
-                portfolio_value,
+                total_wealth,
             )
         )
 
@@ -231,7 +291,39 @@ def get_portfolio_xirr(
             else None
         ),
         "portfolio_value": round(
-            portfolio_value,
+            total_wealth,
+            2,
+        ),
+        "securities_value": round(
+            securities_value,
+            2,
+        ),
+        "cash_balance": round(
+            cash_balance,
+            2,
+        ),
+        "total_wealth": round(
+            total_wealth,
+            2,
+        ),
+        "total_deposits": round(
+            total_deposits,
+            2,
+        ),
+        "total_withdrawals": round(
+            total_withdrawals,
+            2,
+        ),
+        "net_contributions": round(
+            net_contributions,
+            2,
+        ),
+        "investment_gain": round(
+            investment_gain,
+            2,
+        ),
+        "investment_gain_percent": round(
+            investment_gain_percent,
             2,
         ),
         "valuation_date": (

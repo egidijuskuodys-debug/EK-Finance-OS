@@ -149,12 +149,12 @@ function DashboardPage() {
       <section className="kpi-grid">
         <article className="kpi-card">
           <div className="kpi-label">
-            Portfolio value
+            Total wealth
           </div>
 
           <div className="kpi-value">
             {formatCurrency(
-              dashboard.portfolio_value,
+              dashboard.total_wealth,
               dashboard.base_currency,
             )}
           </div>
@@ -169,40 +169,74 @@ function DashboardPage() {
 
         <article className="kpi-card">
           <div className="kpi-label">
-            Total invested
+            Securities
           </div>
 
           <div className="kpi-value">
             {formatCurrency(
-              dashboard.total_invested,
+              dashboard.securities_value,
               dashboard.base_currency,
             )}
           </div>
 
           <div className="kpi-subvalue">
-            {
-              dashboard.total_quantity
-            } total units
+            Current market value
           </div>
         </article>
 
 
         <article className="kpi-card">
           <div className="kpi-label">
-            Unrealized P/L
+            Cash
+          </div>
+
+          <div className="kpi-value">
+            {formatCurrency(
+              dashboard.cash_balance,
+              dashboard.base_currency,
+            )}
+          </div>
+
+          <div className="kpi-subvalue">
+            Broker cash balance
+          </div>
+        </article>
+
+
+        <article className="kpi-card">
+          <div className="kpi-label">
+            Net contributions
+          </div>
+
+          <div className="kpi-value">
+            {formatCurrency(
+              dashboard.net_contributions,
+              dashboard.base_currency,
+            )}
+          </div>
+
+          <div className="kpi-subvalue">
+            Deposits minus withdrawals
+          </div>
+        </article>
+
+
+        <article className="kpi-card">
+          <div className="kpi-label">
+            Investment gain
           </div>
 
           <div
             className={
               `kpi-value ${
                 getValueClass(
-                  dashboard.unrealized_profit,
+                  dashboard.investment_gain,
                 )
               }`
             }
           >
             {formatCurrency(
-              dashboard.unrealized_profit,
+              dashboard.investment_gain,
               dashboard.base_currency,
             )}
           </div>
@@ -212,52 +246,14 @@ function DashboardPage() {
               `kpi-subvalue ${
                 getValueClass(
                   dashboard
-                    .unrealized_profit_percent,
+                    .investment_gain_percent,
                 )
               }`
             }
           >
             {formatPercent(
               dashboard
-                .unrealized_profit_percent,
-            )}
-          </div>
-        </article>
-
-
-        <article className="kpi-card">
-          <div className="kpi-label">
-            Total return
-          </div>
-
-          <div
-            className={
-              `kpi-value ${
-                getValueClass(
-                  dashboard.total_profit,
-                )
-              }`
-            }
-          >
-            {formatCurrency(
-              dashboard.total_profit,
-              dashboard.base_currency,
-            )}
-          </div>
-
-          <div
-            className={
-              `kpi-subvalue ${
-                getValueClass(
-                  dashboard
-                    .total_return_percent,
-                )
-              }`
-            }
-          >
-            {formatPercent(
-              dashboard
-                .total_return_percent,
+                .investment_gain_percent,
             )}
           </div>
         </article>
@@ -289,7 +285,7 @@ function DashboardPage() {
           </div>
 
           <div className="kpi-subvalue">
-            Annualized return
+            Annualized money-weighted return
           </div>
         </article>
       </section>

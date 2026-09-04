@@ -26,8 +26,10 @@ def get_dashboard(
         db
     )
 
-    xirr_data = get_portfolio_xirr(
-        db
+    performance_summary = (
+        get_portfolio_xirr(
+            db
+        )
     )
 
     total_quantity = (
@@ -97,12 +99,54 @@ def get_dashboard(
             total_quantity,
             8,
         ),
-        "portfolio_value": summary[
-            "portfolio_value"
-        ],
+        "portfolio_value": (
+            performance_summary[
+                "total_wealth"
+            ]
+        ),
         "total_invested": summary[
             "total_invested"
         ],
+        "securities_value": (
+            performance_summary[
+                "securities_value"
+            ]
+        ),
+        "cash_balance": (
+            performance_summary[
+                "cash_balance"
+            ]
+        ),
+        "total_wealth": (
+            performance_summary[
+                "total_wealth"
+            ]
+        ),
+        "total_deposits": (
+            performance_summary[
+                "total_deposits"
+            ]
+        ),
+        "total_withdrawals": (
+            performance_summary[
+                "total_withdrawals"
+            ]
+        ),
+        "net_contributions": (
+            performance_summary[
+                "net_contributions"
+            ]
+        ),
+        "investment_gain": (
+            performance_summary[
+                "investment_gain"
+            ]
+        ),
+        "investment_gain_percent": (
+            performance_summary[
+                "investment_gain_percent"
+            ]
+        ),
         "unrealized_profit": summary[
             "unrealized_profit"
         ],
@@ -123,7 +167,7 @@ def get_dashboard(
         "total_return_percent": summary[
             "total_return_percent"
         ],
-        "xirr": xirr_data[
+        "xirr": performance_summary[
             "xirr"
         ],
         "best_position": summary[

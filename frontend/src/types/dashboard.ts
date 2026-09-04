@@ -19,6 +19,17 @@ export interface DashboardData {
   portfolio_value: number
   total_invested: number
 
+  securities_value: number
+  cash_balance: number
+  total_wealth: number
+
+  total_deposits: number
+  total_withdrawals: number
+  net_contributions: number
+
+  investment_gain: number
+  investment_gain_percent: number
+
   unrealized_profit: number
   unrealized_profit_percent: number
 
