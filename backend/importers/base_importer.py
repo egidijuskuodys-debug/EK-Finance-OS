@@ -6,27 +6,60 @@ from importers.import_context import ImportContext
 
 
 class BaseImporter(ABC):
-    def __init__(self, file_path: str):
-        self.file_path = Path(file_path)
-        self._context: ImportContext | None = None
+    SUPPORTED_EXTENSIONS = {
+        ".csv",
+    }
+
+    def __init__(
+        self,
+        file_path: str,
+    ):
+        self.file_path = Path(
+            file_path
+        )
+
+        self._context: (
+            ImportContext | None
+        ) = None
 
     def validate_file(self) -> None:
         if not self.file_path.exists():
             raise ValueError(
-                f"Import file not found: {self.file_path}"
+                "Import file not found: "
+                f"{self.file_path}"
             )
 
         if not self.file_path.is_file():
             raise ValueError(
-                "Import path must point to a file."
+                "Import path must point "
+                "to a file."
             )
 
-        if self.file_path.suffix.lower() != ".csv":
+        extension = (
+            self.file_path.suffix.lower()
+        )
+
+        if (
+            extension
+            not in self.SUPPORTED_EXTENSIONS
+        ):
+            supported = ", ".join(
+                sorted(
+                    self.SUPPORTED_EXTENSIONS
+                )
+            )
+
             raise ValueError(
-                "Only CSV files are currently supported."
+                "Unsupported import file "
+                f"type: '{extension}'. "
+                "Supported file types: "
+                f"{supported}."
             )
 
-        if self.file_path.stat().st_size == 0:
+        if (
+            self.file_path.stat().st_size
+            == 0
+        ):
             raise ValueError(
                 "Import file is empty."
             )
@@ -38,7 +71,10 @@ class BaseImporter(ABC):
     @abstractmethod
     def parse(
         self,
-    ) -> dict[str, list[dict[str, Any]]]:
+    ) -> dict[
+        str,
+        list[dict[str, Any]],
+    ]:
         raise NotImplementedError
 
     @abstractmethod
@@ -50,7 +86,9 @@ class BaseImporter(ABC):
     ) -> dict[str, Any]:
         return {}
 
-    def build_context(self) -> ImportContext:
+    def build_context(
+        self,
+    ) -> ImportContext:
         if self._context is not None:
             return self._context
 
@@ -87,7 +125,9 @@ class BaseImporter(ABC):
 
         return self._context
 
-    def preview(self) -> dict[str, Any]:
+    def preview(
+        self,
+    ) -> dict[str, Any]:
         context = self.build_context()
 
         return context.to_preview_dict()

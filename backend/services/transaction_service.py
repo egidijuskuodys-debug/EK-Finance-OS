@@ -74,8 +74,8 @@ def calculate_sell_net_unit_price(
 ) -> float:
     if transaction.quantity <= 0:
         raise ValueError(
-            "SELL transaction quantity "
-            "must be greater than zero."
+            "SELL or REDEMPTION transaction "
+            "quantity must be greater than zero."
         )
 
     commission = (
@@ -103,6 +103,167 @@ def normalize_lot_quantity(
         < QUANTITY_EPSILON
     ):
         lot.remaining_quantity = 0
+
+
+def process_sell_transaction(
+    transaction: Transaction,
+    active_lots: list[TransactionLot],
+) -> None:
+    available_quantity = sum(
+        lot.remaining_quantity
+        for lot in active_lots
+    )
+
+    if transaction.quantity > (
+        available_quantity
+        + QUANTITY_EPSILON
+    ):
+        raise ValueError(
+            "Transaction history would "
+            "create a negative "
+            "investment quantity."
+        )
+
+    quantity_to_sell = (
+        transaction.quantity
+    )
+
+    sell_unit_price = (
+        calculate_sell_net_unit_price(
+            transaction
+        )
+    )
+
+    realized_profit = 0.0
+
+    for lot in active_lots:
+        if (
+            quantity_to_sell
+            <= QUANTITY_EPSILON
+        ):
+            quantity_to_sell = 0
+            break
+
+        if (
+            lot.remaining_quantity
+            <= 0
+        ):
+            continue
+
+        quantity_from_lot = min(
+            quantity_to_sell,
+            lot.remaining_quantity,
+        )
+
+        realized_profit += (
+            sell_unit_price
+            - lot.purchase_price
+        ) * quantity_from_lot
+
+        lot.remaining_quantity -= (
+            quantity_from_lot
+        )
+
+        quantity_to_sell -= (
+            quantity_from_lot
+        )
+
+        normalize_lot_quantity(
+            lot
+        )
+
+    if (
+        quantity_to_sell
+        > QUANTITY_EPSILON
+    ):
+        raise ValueError(
+            "Transaction history would "
+            "create a negative "
+            "investment quantity."
+        )
+
+    transaction.realized_profit = round(
+        realized_profit,
+        2,
+    )
+
+
+def process_quantity_adjustment(
+    transaction: Transaction,
+    active_lots: list[TransactionLot],
+) -> None:
+    if transaction.quantity <= 0:
+        raise ValueError(
+            "QUANTITY_ADJUSTMENT quantity "
+            "must be greater than zero."
+        )
+
+    active_quantity = sum(
+        lot.remaining_quantity
+        for lot in active_lots
+        if lot.remaining_quantity
+        > QUANTITY_EPSILON
+    )
+
+    if active_quantity <= QUANTITY_EPSILON:
+        raise ValueError(
+            "QUANTITY_ADJUSTMENT requires "
+            "an existing positive position."
+        )
+
+    adjustment_factor = (
+        active_quantity
+        + transaction.quantity
+    ) / active_quantity
+
+    for lot in active_lots:
+        if (
+            lot.remaining_quantity
+            <= QUANTITY_EPSILON
+        ):
+            continue
+
+        old_remaining_quantity = (
+            lot.remaining_quantity
+        )
+
+        old_remaining_cost = (
+            old_remaining_quantity
+            * lot.purchase_price
+        )
+
+        adjusted_quantity = (
+            old_remaining_quantity
+            * adjustment_factor
+        )
+
+        quantity_increase = (
+            adjusted_quantity
+            - old_remaining_quantity
+        )
+
+        lot.remaining_quantity = (
+            adjusted_quantity
+        )
+
+        lot.original_quantity += (
+            quantity_increase
+        )
+
+        if (
+            lot.remaining_quantity
+            > QUANTITY_EPSILON
+        ):
+            lot.purchase_price = (
+                old_remaining_cost
+                / lot.remaining_quantity
+            )
+
+        normalize_lot_quantity(
+            lot
+        )
+
+    transaction.realized_profit = 0
 
 
 def recalculate_position(
@@ -183,88 +344,28 @@ def recalculate_position(
                 lot
             )
 
-        elif transaction_type == "SELL":
-            available_quantity = sum(
-                lot.remaining_quantity
-                for lot in active_lots
+        elif transaction_type in {
+            "SELL",
+            "REDEMPTION",
+        }:
+            process_sell_transaction(
+                transaction,
+                active_lots,
             )
 
-            if transaction.quantity > (
-                available_quantity
-                + QUANTITY_EPSILON
-            ):
-                raise ValueError(
-                    "Transaction history would "
-                    "create a negative "
-                    "investment quantity."
-                )
-
-            quantity_to_sell = (
-                transaction.quantity
-            )
-
-            sell_unit_price = (
-                calculate_sell_net_unit_price(
-                    transaction
-                )
-            )
-
-            realized_profit = 0.0
-
-            for lot in active_lots:
-                if (
-                    quantity_to_sell
-                    <= QUANTITY_EPSILON
-                ):
-                    quantity_to_sell = 0
-                    break
-
-                if (
-                    lot.remaining_quantity
-                    <= 0
-                ):
-                    continue
-
-                quantity_from_lot = min(
-                    quantity_to_sell,
-                    lot.remaining_quantity,
-                )
-
-                realized_profit += (
-                    sell_unit_price
-                    - lot.purchase_price
-                ) * quantity_from_lot
-
-                lot.remaining_quantity -= (
-                    quantity_from_lot
-                )
-
-                quantity_to_sell -= (
-                    quantity_from_lot
-                )
-
-                normalize_lot_quantity(
-                    lot
-                )
-
-            if (
-                quantity_to_sell
-                > QUANTITY_EPSILON
-            ):
-                raise ValueError(
-                    "Transaction history would "
-                    "create a negative "
-                    "investment quantity."
-                )
-
-            transaction.realized_profit = round(
-                realized_profit,
-                2,
+        elif (
+            transaction_type
+            == "QUANTITY_ADJUSTMENT"
+        ):
+            process_quantity_adjustment(
+                transaction,
+                active_lots,
             )
 
         else:
             raise ValueError(
-                "Unsupported transaction type."
+                "Unsupported transaction type: "
+                f"{transaction_type}."
             )
 
     for lot in active_lots:
