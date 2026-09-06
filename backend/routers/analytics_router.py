@@ -18,6 +18,9 @@ from services.performance_service import (
 from services.portfolio_history_service import (
     get_portfolio_history,
 )
+from services.risk_service import (
+    get_portfolio_risk,
+)
 
 
 router = APIRouter(
@@ -38,6 +41,13 @@ def portfolio_allocation(
     db: Session = Depends(get_db),
 ):
     return get_allocation(db)
+
+
+@router.get("/risk")
+def portfolio_risk(
+    db: Session = Depends(get_db),
+):
+    return get_portfolio_risk(db)
 
 
 @router.get("/performance")

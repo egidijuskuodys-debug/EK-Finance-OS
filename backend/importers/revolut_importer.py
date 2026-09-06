@@ -6,7 +6,10 @@ from services.import_engine.revolut_parser import (
     parse_revolut_csv,
 )
 
-
+REVOLUT_ETF_TICKERS = {
+    "EXI2",
+    "I500",
+}
 class RevolutImporter(BaseImporter):
     def get_broker_name(self) -> str:
         return "REVOLUT"
@@ -57,7 +60,21 @@ class RevolutImporter(BaseImporter):
             "positions": [],
             "fees": [],
         }
+    def _get_asset_type(
+        self,
+        ticker: str,
+    ) -> str:
+        normalized_ticker = (
+            ticker.strip().upper()
+        )
 
+        if (
+            normalized_ticker
+            in REVOLUT_ETF_TICKERS
+        ):
+            return "ETF"
+
+        return "Stock"
     def _build_transactions(
         self,
         rows: list[dict[str, Any]],
@@ -201,7 +218,9 @@ class RevolutImporter(BaseImporter):
                         transaction_date
                     ),
                     "asset": ticker,
-                    "asset_type": "Stock",
+                    "asset_type": self._get_asset_type(
+    ticker
+),
                     "market_ticker": ticker,
                 }
             )
