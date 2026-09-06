@@ -91,6 +91,75 @@ export type PortfolioRisk = {
 }
 
 
+export type PerformancePosition = {
+  investment_id: number
+  broker: string
+  ticker: string
+  asset: string
+  asset_type: string
+  status: 'OPEN' | 'CLOSED'
+  quantity: number
+  currency: string
+  open_cost_basis: number
+  current_value: number
+  unrealized_profit: number
+  unrealized_return_percent: number
+  realized_profit: number
+  dividend_net: number
+  total_profit: number
+  base_currency: string
+}
+
+export type PerformanceSummary = {
+  open_cost_basis: number
+  current_value: number
+  unrealized_profit: number
+  unrealized_return_percent: number
+  realized_profit: number
+  dividend_net: number
+  total_profit: number
+  positions: number
+  open_positions: number
+  closed_positions: number
+  base_currency: string
+}
+
+export type PerformanceBrokerItem = {
+  broker: string
+  open_cost_basis: number
+  current_value: number
+  unrealized_profit: number
+  realized_profit: number
+  dividend_net: number
+  total_profit: number
+  positions: number
+  open_positions: number
+  base_currency: string
+}
+
+export type PerformanceAssetTypeItem = {
+  asset_type: string
+  open_cost_basis: number
+  current_value: number
+  unrealized_profit: number
+  realized_profit: number
+  dividend_net: number
+  total_profit: number
+  positions: number
+  open_positions: number
+  base_currency: string
+}
+
+export type PortfolioPerformanceBreakdown = {
+  summary: PerformanceSummary
+  best_position: PerformancePosition | null
+  worst_position: PerformancePosition | null
+  positions: PerformancePosition[]
+  by_broker: PerformanceBrokerItem[]
+  by_asset_type: PerformanceAssetTypeItem[]
+}
+
+
 const API_BASE_URL = 'http://localhost:8000'
 
 
@@ -126,5 +195,23 @@ Promise<PortfolioRisk> {
 
   return response.json() as Promise<
     PortfolioRisk
+  >
+}
+
+
+export async function getPerformanceBreakdown():
+Promise<PortfolioPerformanceBreakdown> {
+  const response = await fetch(
+    `${API_BASE_URL}/analytics/performance-breakdown`,
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Performance breakdown request failed: ${response.status}`,
+    )
+  }
+
+  return response.json() as Promise<
+    PortfolioPerformanceBreakdown
   >
 }

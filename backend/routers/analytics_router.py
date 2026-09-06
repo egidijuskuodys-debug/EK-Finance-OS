@@ -12,6 +12,9 @@ from services.analytics_service import (
     get_summary,
     recalculate_portfolio,
 )
+from services.performance_breakdown_service import (
+    get_performance_breakdown,
+)
 from services.performance_service import (
     get_portfolio_xirr,
 )
@@ -55,6 +58,13 @@ def portfolio_performance(
     db: Session = Depends(get_db),
 ):
     return get_performance(db)
+
+
+@router.get("/performance-breakdown")
+def portfolio_performance_breakdown(
+    db: Session = Depends(get_db),
+):
+    return get_performance_breakdown(db)
 
 
 @router.get("/xirr")
