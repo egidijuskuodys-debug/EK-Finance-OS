@@ -3,6 +3,7 @@
 import { getDashboard } from '../api/dashboard'
 import PortfolioHistoryChart from '../components/PortfolioHistoryChart'
 import PortfolioHealthPanel from '../components/PortfolioHealthPanel'
+import PortfolioInsightsPanel from '../components/PortfolioInsightsPanel'
 import PortfolioPerformancePanel from '../components/PortfolioPerformancePanel'
 import PortfolioRiskPanel from '../components/PortfolioRiskPanel'
 import type { DashboardData } from '../types/dashboard'
@@ -548,6 +549,9 @@ function DashboardPage() {
       <PortfolioHealthPanel />
 
 
+      <PortfolioInsightsPanel />
+
+
       <PortfolioPerformancePanel />
 
 
@@ -558,3 +562,4 @@ function DashboardPage() {
 
 
 export default DashboardPage
+

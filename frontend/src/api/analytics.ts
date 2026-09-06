@@ -186,6 +186,33 @@ export type PortfolioHealth = {
 }
 
 
+export type InsightPriority =
+  | 'High'
+  | 'Medium'
+  | 'Low'
+  | 'Info'
+
+export type PortfolioInsight = {
+  category: string
+  priority: InsightPriority
+  title: string
+  message: string
+}
+
+export type PortfolioInsightsSummary = {
+  health_score: number
+  health_label: string
+  insights_count: number
+  high_priority_count: number
+  medium_priority_count: number
+}
+
+export type PortfolioInsights = {
+  summary: PortfolioInsightsSummary
+  insights: PortfolioInsight[]
+}
+
+
 const API_BASE_URL = 'http://localhost:8000'
 
 
@@ -257,5 +284,23 @@ Promise<PortfolioHealth> {
 
   return response.json() as Promise<
     PortfolioHealth
+  >
+}
+
+
+export async function getPortfolioInsights():
+Promise<PortfolioInsights> {
+  const response = await fetch(
+    `${API_BASE_URL}/analytics/insights`,
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Portfolio insights request failed: ${response.status}`,
+    )
+  }
+
+  return response.json() as Promise<
+    PortfolioInsights
   >
 }
