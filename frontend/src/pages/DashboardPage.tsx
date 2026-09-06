@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { getDashboard } from '../api/dashboard'
 import PortfolioHistoryChart from '../components/PortfolioHistoryChart'
+import PortfolioRiskPanel from '../components/PortfolioRiskPanel'
 import type { DashboardData } from '../types/dashboard'
 
 
@@ -540,6 +541,9 @@ function DashboardPage() {
           </p>
         </div>
       </section>
+
+
+      <PortfolioRiskPanel />
     </main>
   )
 }
