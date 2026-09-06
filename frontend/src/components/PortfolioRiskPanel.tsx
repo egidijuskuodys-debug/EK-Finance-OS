@@ -9,6 +9,7 @@ import {
 
 import type {
   PortfolioRisk,
+  RiskLevel,
 } from '../api/analytics'
 
 
@@ -32,6 +33,21 @@ function formatPercent(
   value: number,
 ) {
   return `${value.toFixed(2)}%`
+}
+
+
+function getRiskLabel(
+  level: RiskLevel,
+) {
+  if (level === 'Low') {
+    return 'Low risk'
+  }
+
+  if (level === 'Moderate') {
+    return 'Moderate risk'
+  }
+
+  return 'High risk'
 }
 
 
@@ -129,6 +145,17 @@ function PortfolioRiskPanel() {
             overview
           </p>
         </div>
+
+        <div className="base-currency-badge">
+          Overall:{' '}
+          {
+            getRiskLabel(
+              risk
+                .risk_assessment
+                .overall_level,
+            )
+          }
+        </div>
       </div>
 
 
@@ -155,6 +182,17 @@ function PortfolioRiskPanel() {
               risk.largest_position
                 ?.ticker
               ?? 'No position'
+            }
+          </div>
+
+          <div className="kpi-subvalue">
+            {
+              getRiskLabel(
+                risk
+                  .risk_assessment
+                  .position_concentration
+                  .level,
+              )
             }
           </div>
         </article>
@@ -217,17 +255,48 @@ function PortfolioRiskPanel() {
           </div>
 
           <div className="kpi-subvalue">
-            Position concentration index
+            {
+              getRiskLabel(
+                risk
+                  .risk_assessment
+                  .hhi_concentration
+                  .level,
+              )
+            }
           </div>
         </article>
       </section>
 
 
-      <div className="dashboard-grid">
-        <div>
-          <h3>
-            Broker exposure
-          </h3>
+      <section className="dashboard-grid">
+        <div className="panel">
+          <div className="panel-header">
+            <div>
+              <h3 className="panel-title">
+                Broker exposure
+              </h3>
+
+              <p className="panel-subtitle">
+                Largest broker:{' '}
+                {
+                  risk
+                    .risk_assessment
+                    .broker_concentration
+                    .broker
+                  ?? '—'
+                }
+                {' · '}
+                {
+                  getRiskLabel(
+                    risk
+                      .risk_assessment
+                      .broker_concentration
+                      .level,
+                  )
+                }
+              </p>
+            </div>
+          </div>
 
           <div className="allocation-list">
             {
@@ -266,10 +335,34 @@ function PortfolioRiskPanel() {
         </div>
 
 
-        <div>
-          <h3>
-            Currency exposure
-          </h3>
+        <div className="panel">
+          <div className="panel-header">
+            <div>
+              <h3 className="panel-title">
+                Currency exposure
+              </h3>
+
+              <p className="panel-subtitle">
+                Largest currency:{' '}
+                {
+                  risk
+                    .risk_assessment
+                    .currency_concentration
+                    .currency
+                  ?? '—'
+                }
+                {' · '}
+                {
+                  getRiskLabel(
+                    risk
+                      .risk_assessment
+                      .currency_concentration
+                      .level,
+                  )
+                }
+              </p>
+            </div>
+          </div>
 
           <div className="allocation-list">
             {
@@ -306,7 +399,7 @@ function PortfolioRiskPanel() {
             }
           </div>
         </div>
-      </div>
+      </section>
 
 
       <div className="table-scroll">

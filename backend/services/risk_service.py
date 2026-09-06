@@ -36,6 +36,86 @@ def _calculate_percentage(
     ) * 100
 
 
+def _get_hhi_level(
+    hhi: float,
+) -> str:
+    if hhi < 1000:
+        return "Low"
+
+    if hhi < 1800:
+        return "Moderate"
+
+    return "High"
+
+
+def _get_position_level(
+    percentage: float,
+) -> str:
+    if percentage < 10:
+        return "Low"
+
+    if percentage < 20:
+        return "Moderate"
+
+    return "High"
+
+
+def _get_broker_level(
+    percentage: float,
+) -> str:
+    if percentage < 40:
+        return "Low"
+
+    if percentage < 60:
+        return "Moderate"
+
+    return "High"
+
+
+def _get_currency_level(
+    percentage: float,
+) -> str:
+    if percentage < 50:
+        return "Low"
+
+    if percentage < 70:
+        return "Moderate"
+
+    return "High"
+
+
+def _risk_score(
+    level: str,
+) -> int:
+    scores = {
+        "Low": 1,
+        "Moderate": 2,
+        "High": 3,
+    }
+
+    return scores[level]
+
+
+def _get_overall_level(
+    levels: list[str],
+) -> str:
+    if not levels:
+        return "Low"
+
+    highest_score = max(
+        _risk_score(level)
+        for level in levels
+    )
+
+    if highest_score == 3:
+        return "High"
+
+    if highest_score == 2:
+        return "Moderate"
+
+    return "Low"
+
+
 def get_portfolio_risk(
     db: Session,
 ):
@@ -269,6 +349,49 @@ def get_portfolio_risk(
         else None
     )
 
+    position_level = (
+        _get_position_level(
+            top_1_percentage
+        )
+    )
+
+    hhi_level = (
+        _get_hhi_level(
+            concentration_hhi
+        )
+    )
+
+    broker_level = (
+        _get_broker_level(
+            largest_broker[
+                "percentage"
+            ]
+        )
+        if largest_broker
+        else "Low"
+    )
+
+    currency_level = (
+        _get_currency_level(
+            largest_currency[
+                "percentage"
+            ]
+        )
+        if largest_currency
+        else "Low"
+    )
+
+    overall_level = (
+        _get_overall_level(
+            [
+                position_level,
+                hhi_level,
+                broker_level,
+                currency_level,
+            ]
+        )
+    )
+
     return {
         "portfolio_value": round(
             total_value,
@@ -280,6 +403,65 @@ def get_portfolio_risk(
         "open_positions": len(
             positions
         ),
+        "risk_assessment": {
+            "overall_level": (
+                overall_level
+            ),
+            "position_concentration": {
+                "level": (
+                    position_level
+                ),
+                "percentage": round(
+                    top_1_percentage,
+                    2,
+                ),
+            },
+            "hhi_concentration": {
+                "level": hhi_level,
+                "value": round(
+                    concentration_hhi,
+                    2,
+                ),
+            },
+            "broker_concentration": {
+                "level": (
+                    broker_level
+                ),
+                "percentage": (
+                    largest_broker[
+                        "percentage"
+                    ]
+                    if largest_broker
+                    else 0.0
+                ),
+                "broker": (
+                    largest_broker[
+                        "broker"
+                    ]
+                    if largest_broker
+                    else None
+                ),
+            },
+            "currency_concentration": {
+                "level": (
+                    currency_level
+                ),
+                "percentage": (
+                    largest_currency[
+                        "percentage"
+                    ]
+                    if largest_currency
+                    else 0.0
+                ),
+                "currency": (
+                    largest_currency[
+                        "currency"
+                    ]
+                    if largest_currency
+                    else None
+                ),
+            },
+        },
         "concentration": {
             "top_1_percentage": round(
                 top_1_percentage,

@@ -34,20 +34,56 @@ export type RiskPosition = {
   base_currency: string
 }
 
+export type RiskLevel =
+  | 'Low'
+  | 'Moderate'
+  | 'High'
+
+export type RiskAssessment = {
+  overall_level: RiskLevel
+
+  position_concentration: {
+    level: RiskLevel
+    percentage: number
+  }
+
+  hhi_concentration: {
+    level: RiskLevel
+    value: number
+  }
+
+  broker_concentration: {
+    level: RiskLevel
+    percentage: number
+    broker: string | null
+  }
+
+  currency_concentration: {
+    level: RiskLevel
+    percentage: number
+    currency: string | null
+  }
+}
+
 export type PortfolioRisk = {
   portfolio_value: number
   base_currency: string
   open_positions: number
+
+  risk_assessment: RiskAssessment
+
   concentration: {
     top_1_percentage: number
     top_3_percentage: number
     top_5_percentage: number
     hhi: number
   }
+
   largest_position: RiskPosition | null
   largest_broker: RiskBrokerItem | null
   largest_asset_type: RiskAssetTypeItem | null
   largest_currency: RiskCurrencyItem | null
+
   top_positions: RiskPosition[]
   by_broker: RiskBrokerItem[]
   by_asset_type: RiskAssetTypeItem[]
