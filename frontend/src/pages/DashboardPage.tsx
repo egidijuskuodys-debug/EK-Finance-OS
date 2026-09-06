@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 
 import { getDashboard } from '../api/dashboard'
 import PortfolioHistoryChart from '../components/PortfolioHistoryChart'
+import PortfolioHealthPanel from '../components/PortfolioHealthPanel'
 import PortfolioPerformancePanel from '../components/PortfolioPerformancePanel'
 import PortfolioRiskPanel from '../components/PortfolioRiskPanel'
 import type { DashboardData } from '../types/dashboard'
@@ -282,7 +283,7 @@ function DashboardPage() {
                 ? formatPercent(
                     dashboard.xirr,
                   )
-                : '—'
+                : 'ā€”'
             }
           </div>
 
@@ -525,7 +526,7 @@ function DashboardPage() {
               {
                 dashboard
                   .best_position
-                ?? '—'
+                ?? 'ā€”'
               }
             </strong>
           </p>
@@ -536,12 +537,15 @@ function DashboardPage() {
               {
                 dashboard
                   .worst_position
-                ?? '—'
+                ?? 'ā€”'
               }
             </strong>
           </p>
         </div>
       </section>
+
+
+      <PortfolioHealthPanel />
 
 
       <PortfolioPerformancePanel />

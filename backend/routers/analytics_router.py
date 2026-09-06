@@ -18,6 +18,9 @@ from services.performance_breakdown_service import (
 from services.performance_service import (
     get_portfolio_xirr,
 )
+from services.portfolio_health_service import (
+    get_portfolio_health,
+)
 from services.portfolio_history_service import (
     get_portfolio_history,
 )
@@ -51,6 +54,13 @@ def portfolio_risk(
     db: Session = Depends(get_db),
 ):
     return get_portfolio_risk(db)
+
+
+@router.get("/health")
+def portfolio_health(
+    db: Session = Depends(get_db),
+):
+    return get_portfolio_health(db)
 
 
 @router.get("/performance")

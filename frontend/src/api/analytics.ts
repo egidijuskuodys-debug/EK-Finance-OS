@@ -160,6 +160,32 @@ export type PortfolioPerformanceBreakdown = {
 }
 
 
+export type HealthComponent = {
+  score: number
+  max_score: number
+}
+
+export type PortfolioHealth = {
+  score: number
+  max_score: number
+  label: string
+
+  components: {
+    position_diversification: HealthComponent
+    hhi_diversification: HealthComponent
+    broker_diversification: HealthComponent
+    currency_diversification: HealthComponent
+    asset_type_diversification: HealthComponent
+  }
+
+  strengths: string[]
+  watch_items: string[]
+
+  base_currency: string
+  portfolio_value: number
+}
+
+
 const API_BASE_URL = 'http://localhost:8000'
 
 
@@ -213,5 +239,23 @@ Promise<PortfolioPerformanceBreakdown> {
 
   return response.json() as Promise<
     PortfolioPerformanceBreakdown
+  >
+}
+
+
+export async function getPortfolioHealth():
+Promise<PortfolioHealth> {
+  const response = await fetch(
+    `${API_BASE_URL}/analytics/health`,
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Portfolio health request failed: ${response.status}`,
+    )
+  }
+
+  return response.json() as Promise<
+    PortfolioHealth
   >
 }
