@@ -16,17 +16,24 @@ def get_current_price(
         stock = yf.Ticker(ticker)
 
         history = stock.history(
-            period="1d"
+            period="5d",
+            auto_adjust=False,
         )
 
         if history.empty:
             return None
 
+        close_prices = (
+            history["Close"]
+            .dropna()
+        )
+
+        if close_prices.empty:
+            return None
+
         return round(
             float(
-                history[
-                    "Close"
-                ].iloc[-1]
+                close_prices.iloc[-1]
             ),
             2,
         )
