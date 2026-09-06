@@ -23,6 +23,16 @@ MARKET_TICKER_MAP: dict[
         "INTERACTIVE BROKERS",
         "VWCE",
     ): "VWCE.DE",
+
+    # SEB ETF
+    (
+        "SEB",
+        "IE00BFNM3G45",
+    ): "SGAS.DE",
+    (
+        "SEB",
+        "IE00BFNM3L97",
+    ): "SGAJ.DE",
 }
 
 
