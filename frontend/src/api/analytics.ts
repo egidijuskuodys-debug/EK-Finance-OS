@@ -213,6 +213,41 @@ export type PortfolioInsights = {
 }
 
 
+export type ActionPriority =
+  | 'High'
+  | 'Medium'
+  | 'Low'
+
+export type PortfolioActionType =
+  | 'Maintain'
+  | 'Monitor'
+  | 'Review'
+  | 'Consider'
+
+export type PortfolioAction = {
+  category: string
+  priority: ActionPriority
+  action_type: PortfolioActionType
+  title: string
+  message: string
+  reason: string
+}
+
+export type PortfolioActionsSummary = {
+  health_score: number
+  health_label: string
+  actions_count: number
+  high_priority_count: number
+  medium_priority_count: number
+  low_priority_count: number
+}
+
+export type PortfolioActions = {
+  summary: PortfolioActionsSummary
+  actions: PortfolioAction[]
+}
+
+
 const API_BASE_URL = 'http://localhost:8000'
 
 
@@ -302,5 +337,23 @@ Promise<PortfolioInsights> {
 
   return response.json() as Promise<
     PortfolioInsights
+  >
+}
+
+
+export async function getPortfolioActions():
+Promise<PortfolioActions> {
+  const response = await fetch(
+    `${API_BASE_URL}/analytics/actions`,
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      `Portfolio actions request failed: ${response.status}`,
+    )
+  }
+
+  return response.json() as Promise<
+    PortfolioActions
   >
 }
