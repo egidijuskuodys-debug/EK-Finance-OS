@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+﻿from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # Importuojame visus modelius, kad SQLAlchemy registruotu metadata
@@ -7,6 +7,7 @@ from models import (
     Dividend,
     ImportHistory,
     Investment,
+    PortfolioTarget,
     Transaction,
     TransactionLot,
 )
@@ -21,6 +22,9 @@ from routers.import_history_router import (
 from routers.import_router import router as import_router
 from routers.investment_router import router as investment_router
 from routers.market_data_router import router as market_data_router
+from routers.portfolio_target_router import (
+    router as portfolio_target_router,
+)
 from routers.transaction_router import router as transaction_router
 
 
@@ -75,6 +79,8 @@ app.include_router(dividend_router)
 app.include_router(import_router)
 
 app.include_router(import_history_router)
+
+app.include_router(portfolio_target_router)
 
 app.include_router(
     cash_flow_router,

@@ -1,4 +1,4 @@
-import {
+﻿import {
   NavLink,
   Outlet,
 } from 'react-router-dom'
@@ -20,6 +20,10 @@ const navigationItems = [
   {
     label: 'Dividends',
     path: '/dividends',
+  },
+  {
+    label: 'Targets',
+    path: '/portfolio-targets',
   },
   {
     label: 'Import',
@@ -81,7 +85,8 @@ function AppLayout() {
           </div>
 
           <div className="topbar-status">
-            ● Backend connected
+            <span className="status-dot" />
+            Backend connected
           </div>
         </header>
 
@@ -95,3 +100,4 @@ function AppLayout() {
 
 
 export default AppLayout
+

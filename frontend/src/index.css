@@ -744,3 +744,160 @@ main {
     overflow-x: auto;
   }
 }
+/* Portfolio targets */
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--positive);
+  box-shadow: 0 0 0 3px var(--positive-soft);
+}
+
+.target-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.target-error {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  color: var(--negative);
+  background: var(--negative-soft);
+}
+
+.target-form {
+  display: grid;
+  grid-template-columns:
+    minmax(150px, 0.8fr)
+    minmax(220px, 1.5fr)
+    minmax(140px, 0.6fr)
+    auto;
+  gap: 14px;
+  align-items: end;
+}
+
+.target-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.target-form input,
+.target-form select {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  outline: none;
+  color: var(--text);
+  background: var(--surface);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.target-form input:focus,
+.target-form select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.target-primary-button,
+.target-secondary-button,
+.target-delete-button {
+  border: 0;
+  border-radius: 9px;
+  font-weight: 700;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.target-primary-button {
+  min-height: 42px;
+  padding: 9px 18px;
+  color: #ffffff;
+  background: var(--primary);
+}
+
+.target-primary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.target-secondary-button,
+.target-delete-button {
+  padding: 7px 11px;
+  font-size: 13px;
+}
+
+.target-secondary-button {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.target-delete-button {
+  color: var(--negative);
+  background: var(--negative-soft);
+}
+
+.target-primary-button:not(:disabled):hover,
+.target-secondary-button:hover,
+.target-delete-button:hover {
+  transform: translateY(-1px);
+}
+
+.target-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.target-empty {
+  padding: 30px !important;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+@media (max-width: 900px) {
+  .target-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .target-summary-grid,
+  .target-form {
+    grid-template-columns: 1fr;
+  }
+
+  .target-actions {
+    flex-direction: column;
+  }
+}
+
+.target-deviation {
+  font-weight: 750;
+}
+
+.target-deviation.on-target {
+  color: var(--positive);
+}
+
+.target-deviation.overweight {
+  color: var(--negative);
+}
+
+.target-deviation.underweight {
+  color: var(--warning);
+}

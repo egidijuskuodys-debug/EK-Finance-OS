@@ -1,4 +1,4 @@
-import {
+﻿import {
   BrowserRouter,
   Navigate,
   Route,
@@ -10,6 +10,7 @@ import DashboardPage from './pages/DashboardPage'
 import DividendsPage from './pages/DividendsPage'
 import ImportPage from './pages/ImportPage'
 import InvestmentsPage from './pages/InvestmentsPage'
+import PortfolioTargetsPage from './pages/PortfolioTargetsPage'
 import TransactionsPage from './pages/TransactionsPage'
 
 
@@ -17,11 +18,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          element={
-            <AppLayout />
-          }
-        >
+        <Route element={<AppLayout />}>
           <Route
             path="/"
             element={
@@ -34,37 +31,32 @@ function App() {
 
           <Route
             path="/dashboard"
-            element={
-              <DashboardPage />
-            }
+            element={<DashboardPage />}
           />
 
           <Route
             path="/investments"
-            element={
-              <InvestmentsPage />
-            }
+            element={<InvestmentsPage />}
           />
 
           <Route
             path="/transactions"
-            element={
-              <TransactionsPage />
-            }
+            element={<TransactionsPage />}
           />
 
           <Route
             path="/dividends"
-            element={
-              <DividendsPage />
-            }
+            element={<DividendsPage />}
+          />
+
+          <Route
+            path="/portfolio-targets"
+            element={<PortfolioTargetsPage />}
           />
 
           <Route
             path="/import"
-            element={
-              <ImportPage />
-            }
+            element={<ImportPage />}
           />
         </Route>
       </Routes>
