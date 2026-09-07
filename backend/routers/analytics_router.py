@@ -30,6 +30,9 @@ from services.portfolio_history_service import (
 from services.portfolio_insights_service import (
     get_portfolio_insights,
 )
+from services.portfolio_rebalancing_service import (
+    get_portfolio_rebalancing,
+)
 from services.risk_service import (
     get_portfolio_risk,
 )
@@ -81,6 +84,13 @@ def portfolio_actions(
     db: Session = Depends(get_db),
 ):
     return get_portfolio_actions(db)
+
+
+@router.get("/rebalancing")
+def portfolio_rebalancing(
+    db: Session = Depends(get_db),
+):
+    return get_portfolio_rebalancing(db)
 
 
 @router.get("/performance")

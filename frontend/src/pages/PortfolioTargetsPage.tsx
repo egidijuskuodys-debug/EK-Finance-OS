@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 
 import {
@@ -7,6 +7,7 @@ import {
   getPortfolioTargets,
   updatePortfolioTarget,
 } from '../api/portfolioTargets'
+import PortfolioRebalancingPlan from '../components/PortfolioRebalancingPlan'
 import PortfolioTargetComparison from '../components/PortfolioTargetComparison'
 import type { PortfolioTarget } from '../types/portfolioTarget'
 
@@ -372,11 +373,11 @@ function PortfolioTargetsPage() {
       </section>
 
       <PortfolioTargetComparison targets={targets} />
+
+      <PortfolioRebalancingPlan targets={targets} />
     </main>
   )
 }
 
 
 export default PortfolioTargetsPage
-
-
