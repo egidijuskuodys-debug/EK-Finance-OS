@@ -7,6 +7,7 @@ import {
   getPortfolioTargets,
   updatePortfolioTarget,
 } from '../api/portfolioTargets'
+import ContributionPlanPanel from '../components/ContributionPlanPanel'
 import PortfolioRebalancingPlan from '../components/PortfolioRebalancingPlan'
 import PortfolioTargetComparison from '../components/PortfolioTargetComparison'
 import type { PortfolioTarget } from '../types/portfolioTarget'
@@ -374,6 +375,8 @@ function PortfolioTargetsPage() {
 
       <PortfolioTargetComparison targets={targets} />
 
+      <ContributionPlanPanel targets={targets} />
+
       <PortfolioRebalancingPlan targets={targets} />
     </main>
   )
@@ -381,3 +384,4 @@ function PortfolioTargetsPage() {
 
 
 export default PortfolioTargetsPage
+

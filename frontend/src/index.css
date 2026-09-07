@@ -942,3 +942,96 @@ main {
   color: #276749;
   background: #f0fff4;
 }
+
+.contribution-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.contribution-form label {
+  display: grid;
+  gap: 8px;
+  min-width: 240px;
+  color: #536176;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.contribution-form input {
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid #d8e0eb;
+  border-radius: 10px;
+  color: #0f1d35;
+  background: #ffffff;
+  font: inherit;
+}
+
+.contribution-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.contribution-summary > div {
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.contribution-summary span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.contribution-summary strong {
+  color: #0f1d35;
+  font-size: 20px;
+}
+
+.contribution-note {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: #5b4a17;
+  background: #fffaf0;
+  font-size: 13px;
+}
+
+.contribution-groups {
+  display: grid;
+  gap: 18px;
+}
+
+.contribution-group {
+  padding: 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.contribution-group .panel-header {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 760px) {
+  .contribution-form {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .contribution-form label {
+    min-width: 0;
+  }
+
+  .contribution-summary {
+    grid-template-columns: 1fr;
+  }
+}

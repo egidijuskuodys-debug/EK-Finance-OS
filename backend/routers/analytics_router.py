@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from database.db import get_db
@@ -20,6 +20,9 @@ from services.performance_service import (
 )
 from services.portfolio_actions_service import (
     get_portfolio_actions,
+)
+from services.portfolio_contribution_service import (
+    get_contribution_plan,
 )
 from services.portfolio_health_service import (
     get_portfolio_health,
@@ -91,6 +94,20 @@ def portfolio_rebalancing(
     db: Session = Depends(get_db),
 ):
     return get_portfolio_rebalancing(db)
+
+
+@router.get("/contribution-plan")
+def portfolio_contribution_plan(
+    amount: float = Query(
+        default=1000.0,
+        gt=0,
+    ),
+    db: Session = Depends(get_db),
+):
+    return get_contribution_plan(
+        db,
+        amount,
+    )
 
 
 @router.get("/performance")
