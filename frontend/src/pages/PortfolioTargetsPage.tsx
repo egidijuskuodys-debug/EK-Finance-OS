@@ -8,6 +8,7 @@ import {
   updatePortfolioTarget,
 } from '../api/portfolioTargets'
 import ContributionPlanPanel from '../components/ContributionPlanPanel'
+import PortfolioProjectionPanel from '../components/PortfolioProjectionPanel'
 import PortfolioRebalancingPlan from '../components/PortfolioRebalancingPlan'
 import PortfolioTargetComparison from '../components/PortfolioTargetComparison'
 import type { PortfolioTarget } from '../types/portfolioTarget'
@@ -248,30 +249,51 @@ function PortfolioTargetsPage() {
       <section className="panel">
         <div className="panel-header">
           <div>
-            <h3 className="panel-title">Add target</h3>
+            <h3 className="panel-title">
+              Add target
+            </h3>
+
             <p className="panel-subtitle">
               Targets within each dimension should total 100%
             </p>
           </div>
         </div>
 
-        <form className="target-form" onSubmit={handleSubmit}>
+        <form
+          className="target-form"
+          onSubmit={handleSubmit}
+        >
           <label>
             Dimension
+
             <select
               value={dimension}
-              onChange={(event) => setDimension(event.target.value)}
+              onChange={
+                (event) => (
+                  setDimension(event.target.value)
+                )
+              }
             >
-              <option value="asset_type">Asset type</option>
-              <option value="broker">Broker</option>
+              <option value="asset_type">
+                Asset type
+              </option>
+
+              <option value="broker">
+                Broker
+              </option>
             </select>
           </label>
 
           <label>
             Target
+
             <input
               value={targetKey}
-              onChange={(event) => setTargetKey(event.target.value)}
+              onChange={
+                (event) => (
+                  setTargetKey(event.target.value)
+                )
+              }
               placeholder={
                 dimension === 'asset_type'
                   ? 'ETF, Fund, Stock...'
@@ -284,10 +306,15 @@ function PortfolioTargetsPage() {
 
           <label>
             Percentage
+
             <input
               type="number"
               value={percentage}
-              onChange={(event) => setPercentage(event.target.value)}
+              onChange={
+                (event) => (
+                  setPercentage(event.target.value)
+                )
+              }
               min="0"
               max="100"
               step="0.1"
@@ -309,7 +336,10 @@ function PortfolioTargetsPage() {
       <section className="panel">
         <div className="panel-header">
           <div>
-            <h3 className="panel-title">Target allocation</h3>
+            <h3 className="panel-title">
+              Target allocation
+            </h3>
+
             <p className="panel-subtitle">
               Desired allocation by asset type and broker
             </p>
@@ -322,36 +352,56 @@ function PortfolioTargetsPage() {
               <tr>
                 <th>Dimension</th>
                 <th>Target</th>
-                <th className="number">Percentage</th>
-                <th className="number">Actions</th>
+
+                <th className="number">
+                  Percentage
+                </th>
+
+                <th className="number">
+                  Actions
+                </th>
               </tr>
             </thead>
 
             <tbody>
               {targets.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="target-empty">
+                  <td
+                    colSpan={4}
+                    className="target-empty"
+                  >
                     No portfolio targets yet.
                   </td>
                 </tr>
               ) : (
                 targets.map((target) => (
                   <tr key={target.id}>
-                    <td>{labelDimension(target.dimension)}</td>
+                    <td>
+                      {labelDimension(
+                        target.dimension,
+                      )}
+                    </td>
+
                     <td>
                       <span className="ticker">
                         {target.target_key}
                       </span>
                     </td>
+
                     <td className="number">
                       {target.target_percentage.toFixed(1)}%
                     </td>
+
                     <td className="number">
                       <div className="target-actions">
                         <button
                           className="target-secondary-button"
                           type="button"
-                          onClick={() => void handleEdit(target)}
+                          onClick={
+                            () => (
+                              void handleEdit(target)
+                            )
+                          }
                         >
                           Edit
                         </button>
@@ -359,7 +409,11 @@ function PortfolioTargetsPage() {
                         <button
                           className="target-delete-button"
                           type="button"
-                          onClick={() => void handleDelete(target)}
+                          onClick={
+                            () => (
+                              void handleDelete(target)
+                            )
+                          }
                         >
                           Delete
                         </button>
@@ -373,15 +427,22 @@ function PortfolioTargetsPage() {
         </div>
       </section>
 
-      <PortfolioTargetComparison targets={targets} />
+      <PortfolioTargetComparison
+        targets={targets}
+      />
 
-      <ContributionPlanPanel targets={targets} />
+      <ContributionPlanPanel
+        targets={targets}
+      />
 
-      <PortfolioRebalancingPlan targets={targets} />
+      <PortfolioProjectionPanel />
+
+      <PortfolioRebalancingPlan
+        targets={targets}
+      />
     </main>
   )
 }
 
 
 export default PortfolioTargetsPage
-

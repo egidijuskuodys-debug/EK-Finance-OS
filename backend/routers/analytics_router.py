@@ -33,6 +33,9 @@ from services.portfolio_history_service import (
 from services.portfolio_insights_service import (
     get_portfolio_insights,
 )
+from services.portfolio_projection_service import (
+    get_portfolio_projection,
+)
 from services.portfolio_rebalancing_service import (
     get_portfolio_rebalancing,
 )
@@ -107,6 +110,26 @@ def portfolio_contribution_plan(
     return get_contribution_plan(
         db,
         amount,
+    )
+
+
+@router.get("/projection")
+def portfolio_projection(
+    monthly_contribution: float = Query(
+        default=1000.0,
+        ge=0,
+    ),
+    annual_return_percent: float = Query(
+        default=7.0,
+        gt=-100,
+        le=100,
+    ),
+    db: Session = Depends(get_db),
+):
+    return get_portfolio_projection(
+        db=db,
+        monthly_contribution=monthly_contribution,
+        annual_return_percent=annual_return_percent,
     )
 
 
