@@ -4,5 +4,6 @@ from .import_history import ImportHistory
 from .investment import Investment
 from .portfolio_target import PortfolioTarget
 from .price_history import PriceHistory
+from .real_estate import RealEstateProperty
 from .transaction import Transaction
 from .transaction_lot import TransactionLot
