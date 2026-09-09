@@ -1,9 +1,12 @@
-﻿import { useEffect, useState } from 'react'
+﻿import {
+  useEffect,
+  useState,
+} from 'react'
 
 import { getDashboard } from '../api/dashboard'
-import PortfolioHistoryChart from '../components/PortfolioHistoryChart'
-import PortfolioHealthPanel from '../components/PortfolioHealthPanel'
 import PortfolioActionsPanel from '../components/PortfolioActionsPanel'
+import PortfolioHealthPanel from '../components/PortfolioHealthPanel'
+import PortfolioHistoryChart from '../components/PortfolioHistoryChart'
 import PortfolioInsightsPanel from '../components/PortfolioInsightsPanel'
 import PortfolioPerformancePanel from '../components/PortfolioPerformancePanel'
 import PortfolioRiskPanel from '../components/PortfolioRiskPanel'
@@ -68,12 +71,11 @@ function DashboardPage() {
     string | null
   >(null)
 
+
   useEffect(() => {
     async function loadDashboard() {
       try {
-        const data = (
-          await getDashboard()
-        )
+        const data = await getDashboard()
 
         setDashboard(data)
       } catch (error) {
@@ -143,7 +145,7 @@ function DashboardPage() {
           </h1>
 
           <p>
-            Investment portfolio overview
+            Complete personal finance overview
           </p>
         </div>
 
@@ -157,20 +159,80 @@ function DashboardPage() {
       <section className="kpi-grid">
         <article className="kpi-card">
           <div className="kpi-label">
-            Total wealth
+            Net worth
+          </div>
+
+          <div
+            className={
+              `kpi-value ${
+                getValueClass(
+                  dashboard.net_worth,
+                )
+              }`
+            }
+          >
+            {
+              formatCurrency(
+                dashboard.net_worth,
+                dashboard.base_currency,
+              )
+            }
+          </div>
+
+          <div className="kpi-subvalue">
+            Investments plus property equity
+          </div>
+        </article>
+
+
+        <article className="kpi-card">
+          <div className="kpi-label">
+            Investment wealth
           </div>
 
           <div className="kpi-value">
-            {formatCurrency(
-              dashboard.total_wealth,
-              dashboard.base_currency,
-            )}
+            {
+              formatCurrency(
+                dashboard.total_wealth,
+                dashboard.base_currency,
+              )
+            }
           </div>
 
           <div className="kpi-subvalue">
             {
               dashboard.total_positions
-            } positions
+            } positions including cash
+          </div>
+        </article>
+
+
+        <article className="kpi-card">
+          <div className="kpi-label">
+            Property equity
+          </div>
+
+          <div
+            className={
+              `kpi-value ${
+                getValueClass(
+                  dashboard
+                    .real_estate_equity,
+                )
+              }`
+            }
+          >
+            {
+              formatCurrency(
+                dashboard
+                  .real_estate_equity,
+                dashboard.base_currency,
+              )
+            }
+          </div>
+
+          <div className="kpi-subvalue">
+            Property value minus mortgage
           </div>
         </article>
 
@@ -181,10 +243,12 @@ function DashboardPage() {
           </div>
 
           <div className="kpi-value">
-            {formatCurrency(
-              dashboard.securities_value,
-              dashboard.base_currency,
-            )}
+            {
+              formatCurrency(
+                dashboard.securities_value,
+                dashboard.base_currency,
+              )
+            }
           </div>
 
           <div className="kpi-subvalue">
@@ -198,11 +262,21 @@ function DashboardPage() {
             Cash
           </div>
 
-          <div className="kpi-value">
-            {formatCurrency(
-              dashboard.cash_balance,
-              dashboard.base_currency,
-            )}
+          <div
+            className={
+              `kpi-value ${
+                getValueClass(
+                  dashboard.cash_balance,
+                )
+              }`
+            }
+          >
+            {
+              formatCurrency(
+                dashboard.cash_balance,
+                dashboard.base_currency,
+              )
+            }
           </div>
 
           <div className="kpi-subvalue">
@@ -217,18 +291,22 @@ function DashboardPage() {
           </div>
 
           <div className="kpi-value">
-            {formatCurrency(
-              dashboard.net_contributions,
-              dashboard.base_currency,
-            )}
+            {
+              formatCurrency(
+                dashboard.net_contributions,
+                dashboard.base_currency,
+              )
+            }
           </div>
 
           <div className="kpi-subvalue">
             Deposits minus withdrawals
           </div>
         </article>
+      </section>
 
 
+      <section className="kpi-grid">
         <article className="kpi-card">
           <div className="kpi-label">
             Investment gain
@@ -243,10 +321,12 @@ function DashboardPage() {
               }`
             }
           >
-            {formatCurrency(
-              dashboard.investment_gain,
-              dashboard.base_currency,
-            )}
+            {
+              formatCurrency(
+                dashboard.investment_gain,
+                dashboard.base_currency,
+              )
+            }
           </div>
 
           <div
@@ -259,10 +339,12 @@ function DashboardPage() {
               }`
             }
           >
-            {formatPercent(
-              dashboard
-                .investment_gain_percent,
-            )}
+            {
+              formatPercent(
+                dashboard
+                  .investment_gain_percent,
+              )
+            }
           </div>
         </article>
 
@@ -296,20 +378,20 @@ function DashboardPage() {
             Annualized money-weighted return
           </div>
         </article>
-      </section>
 
 
-      <section className="kpi-grid">
         <article className="kpi-card">
           <div className="kpi-label">
             Total invested
           </div>
 
           <div className="kpi-value">
-            {formatCurrency(
-              dashboard.total_invested,
-              dashboard.base_currency,
-            )}
+            {
+              formatCurrency(
+                dashboard.total_invested,
+                dashboard.base_currency,
+              )
+            }
           </div>
 
           <div className="kpi-subvalue">
@@ -332,10 +414,12 @@ function DashboardPage() {
               }`
             }
           >
-            {formatCurrency(
-              dashboard.total_profit,
-              dashboard.base_currency,
-            )}
+            {
+              formatCurrency(
+                dashboard.total_profit,
+                dashboard.base_currency,
+              )
+            }
           </div>
 
           <div
@@ -348,9 +432,11 @@ function DashboardPage() {
               }`
             }
           >
-            {formatPercent(
-              dashboard.total_return_percent,
-            )}
+            {
+              formatPercent(
+                dashboard.total_return_percent,
+              )
+            }
           </div>
         </article>
 
@@ -364,15 +450,19 @@ function DashboardPage() {
             className={
               `kpi-value ${
                 getValueClass(
-                  dashboard.unrealized_profit,
+                  dashboard
+                    .unrealized_profit,
                 )
               }`
             }
           >
-            {formatCurrency(
-              dashboard.unrealized_profit,
-              dashboard.base_currency,
-            )}
+            {
+              formatCurrency(
+                dashboard
+                  .unrealized_profit,
+                dashboard.base_currency,
+              )
+            }
           </div>
 
           <div
@@ -385,10 +475,12 @@ function DashboardPage() {
               }`
             }
           >
-            {formatPercent(
-              dashboard
-                .unrealized_profit_percent,
-            )}
+            {
+              formatPercent(
+                dashboard
+                  .unrealized_profit_percent,
+              )
+            }
           </div>
         </article>
 
@@ -407,14 +499,89 @@ function DashboardPage() {
               }`
             }
           >
-            {formatCurrency(
-              dashboard.realized_profit,
-              dashboard.base_currency,
-            )}
+            {
+              formatCurrency(
+                dashboard.realized_profit,
+                dashboard.base_currency,
+              )
+            }
           </div>
 
           <div className="kpi-subvalue">
             Profit from completed sales
+          </div>
+        </article>
+      </section>
+
+
+      <section className="kpi-grid">
+        <article className="kpi-card">
+          <div className="kpi-label">
+            Property value
+          </div>
+
+          <div className="kpi-value">
+            {
+              formatCurrency(
+                dashboard.real_estate_value,
+                dashboard.base_currency,
+              )
+            }
+          </div>
+
+          <div className="kpi-subvalue">
+            Current real estate value
+          </div>
+        </article>
+
+
+        <article className="kpi-card">
+          <div className="kpi-label">
+            Mortgage balance
+          </div>
+
+          <div className="kpi-value">
+            {
+              formatCurrency(
+                dashboard
+                  .real_estate_loan_balance,
+                dashboard.base_currency,
+              )
+            }
+          </div>
+
+          <div className="kpi-subvalue">
+            Outstanding property debt
+          </div>
+        </article>
+
+
+        <article className="kpi-card">
+          <div className="kpi-label">
+            Rental cash flow
+          </div>
+
+          <div
+            className={
+              `kpi-value ${
+                getValueClass(
+                  dashboard
+                    .monthly_rental_cash_flow,
+                )
+              }`
+            }
+          >
+            {
+              formatCurrency(
+                dashboard
+                  .monthly_rental_cash_flow,
+                dashboard.base_currency,
+              )
+            }
+          </div>
+
+          <div className="kpi-subvalue">
+            Monthly after mortgage and expenses
           </div>
         </article>
 
@@ -433,38 +600,16 @@ function DashboardPage() {
               }`
             }
           >
-            {formatCurrency(
-              dashboard.dividend_net,
-              dashboard.base_currency,
-            )}
-          </div>
-
-          <div className="kpi-subvalue">
-            Dividends after tax
-          </div>
-        </article>
-
-
-        <article className="kpi-card">
-          <div className="kpi-label">
-            Total quantity
-          </div>
-
-          <div className="kpi-value">
             {
-              dashboard
-                .total_quantity
-                .toLocaleString(
-                  'lt-LT',
-                  {
-                    maximumFractionDigits: 4,
-                  },
-                )
+              formatCurrency(
+                dashboard.dividend_net,
+                dashboard.base_currency,
+              )
             }
           </div>
 
           <div className="kpi-subvalue">
-            Units across all positions
+            Dividends after tax
           </div>
         </article>
       </section>
@@ -536,18 +681,17 @@ function DashboardPage() {
                     .map(
                       (
                         position,
+                        index,
                       ) => (
                         <tr
                           key={
-                            position
-                              .ticker
+                            `${position.ticker}-${index}`
                           }
                         >
                           <td>
                             <span className="ticker">
                               {
-                                position
-                                  .ticker
+                                position.ticker
                               }
                             </span>
                           </td>
@@ -555,8 +699,7 @@ function DashboardPage() {
                           <td>
                             <span className="asset-type">
                               {
-                                position
-                                  .asset_type
+                                position.asset_type
                               }
                             </span>
                           </td>
@@ -564,10 +707,8 @@ function DashboardPage() {
                           <td className="number">
                             {
                               formatCurrency(
-                                position
-                                  .current_value,
-                                dashboard
-                                  .base_currency,
+                                position.current_value,
+                                dashboard.base_currency,
                               )
                             }
                           </td>
@@ -576,18 +717,15 @@ function DashboardPage() {
                             className={
                               `number ${
                                 getValueClass(
-                                  position
-                                    .profit_loss,
+                                  position.profit_loss,
                                 )
                               }`
                             }
                           >
                             {
                               formatCurrency(
-                                position
-                                  .profit_loss,
-                                dashboard
-                                  .base_currency,
+                                position.profit_loss,
+                                dashboard.base_currency,
                               )
                             }
                           </td>
@@ -627,8 +765,8 @@ function DashboardPage() {
               </h3>
 
               <p className="panel-subtitle">
-                Portfolio mix by
-                asset type
+                Investment portfolio
+                by asset type
               </p>
             </div>
           </div>
@@ -643,14 +781,10 @@ function DashboardPage() {
                   ) => (
                     <div
                       className="allocation-row"
-                      key={
-                        item.name
-                      }
+                      key={item.name}
                     >
                       <div className="allocation-name">
-                        {
-                          item.name
-                        }
+                        {item.name}
                       </div>
 
                       <div className="allocation-track">
@@ -678,25 +812,6 @@ function DashboardPage() {
 
 
           <h3>
-            Income
-          </h3>
-
-          <p>
-            Dividends:{' '}
-            <strong>
-              {
-                formatCurrency(
-                  dashboard
-                    .dividend_net,
-                  dashboard
-                    .base_currency,
-                )
-              }
-            </strong>
-          </p>
-
-
-          <h3>
             Portfolio leaders
           </h3>
 
@@ -704,8 +819,7 @@ function DashboardPage() {
             Best position:{' '}
             <strong>
               {
-                dashboard
-                  .best_position
+                dashboard.best_position
                 ?? '\u2014'
               }
             </strong>
@@ -715,8 +829,7 @@ function DashboardPage() {
             Worst position:{' '}
             <strong>
               {
-                dashboard
-                  .worst_position
+                dashboard.worst_position
                 ?? '\u2014'
               }
             </strong>

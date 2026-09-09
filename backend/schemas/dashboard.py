@@ -1,13 +1,17 @@
 from pydantic import BaseModel
 
 
-class DashboardAllocationItem(BaseModel):
+class DashboardAllocationItem(
+    BaseModel
+):
     name: str
     value: float
     percentage: float
 
 
-class DashboardPositionItem(BaseModel):
+class DashboardPositionItem(
+    BaseModel
+):
     ticker: str
     asset_type: str
     current_value: float
@@ -25,6 +29,13 @@ class DashboardResponse(BaseModel):
     securities_value: float
     cash_balance: float
     total_wealth: float
+
+    real_estate_value: float
+    real_estate_loan_balance: float
+    real_estate_equity: float
+    monthly_rental_cash_flow: float
+
+    net_worth: float
 
     total_deposits: float
     total_withdrawals: float

@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 
-from repositories import dashboard_repository
+from repositories import (
+    dashboard_repository,
+)
 from services.analytics_service import (
     get_allocation,
     get_performance,
@@ -8,6 +10,9 @@ from services.analytics_service import (
 )
 from services.performance_service import (
     get_portfolio_xirr,
+)
+from services.real_estate_service import (
+    get_real_estate_summary,
 )
 
 
@@ -32,11 +37,52 @@ def get_dashboard(
         )
     )
 
+    real_estate_summary = (
+        get_real_estate_summary(
+            db
+        )
+    )
+
     total_quantity = (
         dashboard_repository
         .get_total_quantity(
             db
         )
+    )
+
+    investment_wealth = float(
+        performance_summary[
+            "total_wealth"
+        ]
+    )
+
+    real_estate_value = float(
+        real_estate_summary[
+            "total_current_value"
+        ]
+    )
+
+    real_estate_loan_balance = float(
+        real_estate_summary[
+            "total_loan_balance"
+        ]
+    )
+
+    real_estate_equity = float(
+        real_estate_summary[
+            "total_equity"
+        ]
+    )
+
+    monthly_rental_cash_flow = float(
+        real_estate_summary[
+            "total_monthly_cash_flow"
+        ]
+    )
+
+    net_worth = (
+        investment_wealth
+        + real_estate_equity
     )
 
     asset_allocation = []
@@ -99,10 +145,9 @@ def get_dashboard(
             total_quantity,
             8,
         ),
-        "portfolio_value": (
-            performance_summary[
-                "total_wealth"
-            ]
+        "portfolio_value": round(
+            investment_wealth,
+            2,
         ),
         "total_invested": summary[
             "total_invested"
@@ -117,10 +162,33 @@ def get_dashboard(
                 "cash_balance"
             ]
         ),
-        "total_wealth": (
-            performance_summary[
-                "total_wealth"
-            ]
+        "total_wealth": round(
+            investment_wealth,
+            2,
+        ),
+        "real_estate_value": round(
+            real_estate_value,
+            2,
+        ),
+        "real_estate_loan_balance": (
+            round(
+                real_estate_loan_balance,
+                2,
+            )
+        ),
+        "real_estate_equity": round(
+            real_estate_equity,
+            2,
+        ),
+        "monthly_rental_cash_flow": (
+            round(
+                monthly_rental_cash_flow,
+                2,
+            )
+        ),
+        "net_worth": round(
+            net_worth,
+            2,
         ),
         "total_deposits": (
             performance_summary[

@@ -4,6 +4,7 @@ export interface DashboardAllocationItem {
   percentage: number
 }
 
+
 export interface DashboardPositionItem {
   ticker: string
   asset_type: string
@@ -11,6 +12,7 @@ export interface DashboardPositionItem {
   profit_loss: number
   profit_loss_percent: number
 }
+
 
 export interface DashboardData {
   total_positions: number
@@ -22,6 +24,13 @@ export interface DashboardData {
   securities_value: number
   cash_balance: number
   total_wealth: number
+
+  real_estate_value: number
+  real_estate_loan_balance: number
+  real_estate_equity: number
+  monthly_rental_cash_flow: number
+
+  net_worth: number
 
   total_deposits: number
   total_withdrawals: number
