@@ -1,16 +1,49 @@
 import {
+  useCallback,
   useEffect,
   useState,
+} from 'react'
+import type {
+  FormEvent,
 } from 'react'
 
 import {
   getRealEstateProperties,
   getRealEstateSummary,
+  updateRealEstateProperty,
 } from '../api/realEstate'
 import type {
   RealEstateProperty,
   RealEstateSummary,
 } from '../types/realEstate'
+
+
+interface EditFormState {
+  current_value: string
+  loan_balance: string
+  interest_rate: string
+  monthly_payment: string
+  monthly_rent: string
+  monthly_expenses: string
+}
+
+
+interface MetricCardProps {
+  label: string
+  value: string
+  subvalue: string
+  valueClass?: string
+}
+
+
+const emptyEditForm: EditFormState = {
+  current_value: '',
+  loan_balance: '',
+  interest_rate: '',
+  monthly_payment: '',
+  monthly_rent: '',
+  monthly_expenses: '',
+}
 
 
 function formatCurrency(
@@ -51,6 +84,34 @@ function getValueClass(
 }
 
 
+function MetricCard({
+  label,
+  value,
+  subvalue,
+  valueClass = '',
+}: MetricCardProps) {
+  return (
+    <article className="kpi-card">
+      <div className="kpi-label">
+        {label}
+      </div>
+
+      <div
+        className={
+          `kpi-value ${valueClass}`
+        }
+      >
+        {value}
+      </div>
+
+      <div className="kpi-subvalue">
+        {subvalue}
+      </div>
+    </article>
+  )
+}
+
+
 function RealEstatePage() {
   const [
     properties,
@@ -78,25 +139,59 @@ function RealEstatePage() {
     string | null
   >(null)
 
+  const [
+    editingPropertyId,
+    setEditingPropertyId,
+  ] = useState<
+    number | null
+  >(null)
+
+  const [
+    editForm,
+    setEditForm,
+  ] = useState<EditFormState>(
+    emptyEditForm,
+  )
+
+  const [
+    saving,
+    setSaving,
+  ] = useState(false)
+
+  const [
+    actionError,
+    setActionError,
+  ] = useState<
+    string | null
+  >(null)
+
+
+  const loadRealEstate = useCallback(
+    async () => {
+      const [
+        propertyData,
+        summaryData,
+      ] = await Promise.all([
+        getRealEstateProperties(),
+        getRealEstateSummary(),
+      ])
+
+      setProperties(
+        propertyData,
+      )
+
+      setSummary(
+        summaryData,
+      )
+    },
+    [],
+  )
+
 
   useEffect(() => {
-    async function loadRealEstate() {
+    async function loadPage() {
       try {
-        const [
-          propertyData,
-          summaryData,
-        ] = await Promise.all([
-          getRealEstateProperties(),
-          getRealEstateSummary(),
-        ])
-
-        setProperties(
-          propertyData,
-        )
-
-        setSummary(
-          summaryData,
-        )
+        await loadRealEstate()
       } catch (error) {
         if (
           error instanceof Error
@@ -114,8 +209,181 @@ function RealEstatePage() {
       }
     }
 
-    loadRealEstate()
-  }, [])
+    loadPage()
+  }, [loadRealEstate])
+
+
+  function startEditing(
+    property: RealEstateProperty,
+  ) {
+    setEditingPropertyId(
+      property.id,
+    )
+
+    setEditForm({
+      current_value: String(
+        property.current_value,
+      ),
+      loan_balance: String(
+        property.loan_balance,
+      ),
+      interest_rate: (
+        property.interest_rate
+        !== null
+          ? String(
+              property.interest_rate,
+            )
+          : ''
+      ),
+      monthly_payment: String(
+        property.monthly_payment,
+      ),
+      monthly_rent: String(
+        property.monthly_rent,
+      ),
+      monthly_expenses: String(
+        property.monthly_expenses,
+      ),
+    })
+
+    setActionError(null)
+  }
+
+
+  function cancelEditing() {
+    setEditingPropertyId(null)
+
+    setEditForm(
+      emptyEditForm,
+    )
+
+    setActionError(null)
+  }
+
+
+  function updateFormField(
+    field: keyof EditFormState,
+    value: string,
+  ) {
+    setEditForm(
+      (
+        currentForm,
+      ) => ({
+        ...currentForm,
+        [field]: value,
+      }),
+    )
+  }
+
+
+  async function saveProperty(
+    event: FormEvent<HTMLFormElement>,
+  ) {
+    event.preventDefault()
+
+    if (
+      editingPropertyId === null
+    ) {
+      return
+    }
+
+    const currentValue = Number(
+      editForm.current_value,
+    )
+
+    const loanBalance = Number(
+      editForm.loan_balance,
+    )
+
+    const monthlyPayment = Number(
+      editForm.monthly_payment,
+    )
+
+    const monthlyRent = Number(
+      editForm.monthly_rent,
+    )
+
+    const monthlyExpenses = Number(
+      editForm.monthly_expenses,
+    )
+
+    const interestRate = (
+      editForm.interest_rate.trim()
+        ? Number(
+            editForm.interest_rate,
+          )
+        : null
+    )
+
+    const numericValues = [
+      currentValue,
+      loanBalance,
+      monthlyPayment,
+      monthlyRent,
+      monthlyExpenses,
+    ]
+
+    if (
+      numericValues.some(
+        (
+          value,
+        ) => (
+          !Number.isFinite(value)
+          || value < 0
+        ),
+      )
+      || (
+        interestRate !== null
+        && (
+          !Number.isFinite(
+            interestRate,
+          )
+          || interestRate < 0
+        )
+      )
+    ) {
+      setActionError(
+        'Enter valid non-negative numbers.',
+      )
+
+      return
+    }
+
+    setSaving(true)
+    setActionError(null)
+
+    try {
+      await updateRealEstateProperty(
+        editingPropertyId,
+        {
+          current_value: currentValue,
+          loan_balance: loanBalance,
+          interest_rate: interestRate,
+          monthly_payment: monthlyPayment,
+          monthly_rent: monthlyRent,
+          monthly_expenses: monthlyExpenses,
+        },
+      )
+
+      await loadRealEstate()
+
+      cancelEditing()
+    } catch (error) {
+      if (
+        error instanceof Error
+      ) {
+        setActionError(
+          error.message,
+        )
+      } else {
+        setActionError(
+          'Failed to update property.',
+        )
+      }
+    } finally {
+      setSaving(false)
+    }
+  }
 
 
   if (loading) {
@@ -176,158 +444,92 @@ function RealEstatePage() {
 
 
       <section className="kpi-grid">
-        <article className="kpi-card">
-          <div className="kpi-label">
-            Property value
-          </div>
+        <MetricCard
+          label="Property value"
+          value={
+            formatCurrency(
+              summary.total_current_value,
+              summary.currency,
+            )
+          }
+          subvalue={
+            `${summary.properties_count} properties`
+          }
+        />
 
-          <div className="kpi-value">
-            {
-              formatCurrency(
-                summary
-                  .total_current_value,
-                summary.currency,
-              )
-            }
-          </div>
+        <MetricCard
+          label="Mortgage balance"
+          value={
+            formatCurrency(
+              summary.total_loan_balance,
+              summary.currency,
+            )
+          }
+          subvalue="Outstanding debt"
+        />
 
-          <div className="kpi-subvalue">
-            {
+        <MetricCard
+          label="Property equity"
+          value={
+            formatCurrency(
+              summary.total_equity,
+              summary.currency,
+            )
+          }
+          subvalue="Value minus mortgage"
+          valueClass={
+            getValueClass(
+              summary.total_equity,
+            )
+          }
+        />
+
+        <MetricCard
+          label="Monthly rent"
+          value={
+            formatCurrency(
+              summary.total_monthly_rent,
+              summary.currency,
+            )
+          }
+          subvalue="Gross rental income"
+        />
+
+        <MetricCard
+          label="Monthly cash flow"
+          value={
+            formatCurrency(
               summary
-                .properties_count
-            } properties
-          </div>
-        </article>
+                .total_monthly_cash_flow,
+              summary.currency,
+            )
+          }
+          subvalue="After mortgage and expenses"
+          valueClass={
+            getValueClass(
+              summary
+                .total_monthly_cash_flow,
+            )
+          }
+        />
 
-
-        <article className="kpi-card">
-          <div className="kpi-label">
-            Mortgage balance
-          </div>
-
-          <div className="kpi-value">
-            {
-              formatCurrency(
-                summary
-                  .total_loan_balance,
-                summary.currency,
-              )
-            }
-          </div>
-
-          <div className="kpi-subvalue">
-            Outstanding debt
-          </div>
-        </article>
-
-
-        <article className="kpi-card">
-          <div className="kpi-label">
-            Property equity
-          </div>
-
-          <div
-            className={
-              `kpi-value ${
-                getValueClass(
-                  summary.total_equity,
-                )
-              }`
-            }
-          >
-            {
-              formatCurrency(
-                summary.total_equity,
-                summary.currency,
-              )
-            }
-          </div>
-
-          <div className="kpi-subvalue">
-            Value minus mortgage
-          </div>
-        </article>
-
-
-        <article className="kpi-card">
-          <div className="kpi-label">
-            Monthly rent
-          </div>
-
-          <div className="kpi-value">
-            {
-              formatCurrency(
-                summary
-                  .total_monthly_rent,
-                summary.currency,
-              )
-            }
-          </div>
-
-          <div className="kpi-subvalue">
-            Gross rental income
-          </div>
-        </article>
-
-
-        <article className="kpi-card">
-          <div className="kpi-label">
-            Monthly cash flow
-          </div>
-
-          <div
-            className={
-              `kpi-value ${
-                getValueClass(
-                  summary
-                    .total_monthly_cash_flow,
-                )
-              }`
-            }
-          >
-            {
-              formatCurrency(
-                summary
-                  .total_monthly_cash_flow,
-                summary.currency,
-              )
-            }
-          </div>
-
-          <div className="kpi-subvalue">
-            After mortgage and expenses
-          </div>
-        </article>
-
-
-        <article className="kpi-card">
-          <div className="kpi-label">
-            Annual cash flow
-          </div>
-
-          <div
-            className={
-              `kpi-value ${
-                getValueClass(
-                  summary
-                    .total_annual_cash_flow,
-                )
-              }`
-            }
-          >
-            {
-              formatCurrency(
-                summary
-                  .total_annual_cash_flow,
-                summary.currency,
-              )
-            }
-          </div>
-
-          <div className="kpi-subvalue">
-            Net cash flow per year
-          </div>
-        </article>
+        <MetricCard
+          label="Annual cash flow"
+          value={
+            formatCurrency(
+              summary
+                .total_annual_cash_flow,
+              summary.currency,
+            )
+          }
+          subvalue="Net cash flow per year"
+          valueClass={
+            getValueClass(
+              summary
+                .total_annual_cash_flow,
+            )
+          }
+        />
       </section>
 
 
@@ -369,168 +571,339 @@ function RealEstatePage() {
                       </p>
                     </div>
 
-                    <div className="base-currency-badge">
+                    <div className="target-actions">
+                      <span className="base-currency-badge">
+                        {property.currency}
+                      </span>
+
                       {
-                        property.currency
+                        editingPropertyId
+                        !== property.id
+                          ? (
+                              <button
+                                className="target-secondary-button"
+                                type="button"
+                                onClick={
+                                  () => (
+                                    startEditing(
+                                      property,
+                                    )
+                                  )
+                                }
+                              >
+                                Edit property
+                              </button>
+                            )
+                          : null
                       }
                     </div>
                   </div>
 
 
+                  {
+                    editingPropertyId
+                    === property.id
+                      ? (
+                          <form
+                            className="target-form"
+                            onSubmit={
+                              saveProperty
+                            }
+                          >
+                            <label>
+                              Current value
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                required
+                                value={
+                                  editForm
+                                    .current_value
+                                }
+                                onChange={
+                                  (
+                                    event,
+                                  ) => (
+                                    updateFormField(
+                                      'current_value',
+                                      event.target.value,
+                                    )
+                                  )
+                                }
+                              />
+                            </label>
+
+                            <label>
+                              Mortgage balance
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                required
+                                value={
+                                  editForm
+                                    .loan_balance
+                                }
+                                onChange={
+                                  (
+                                    event,
+                                  ) => (
+                                    updateFormField(
+                                      'loan_balance',
+                                      event.target.value,
+                                    )
+                                  )
+                                }
+                              />
+                            </label>
+
+                            <label>
+                              Interest rate (%)
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.001"
+                                value={
+                                  editForm
+                                    .interest_rate
+                                }
+                                onChange={
+                                  (
+                                    event,
+                                  ) => (
+                                    updateFormField(
+                                      'interest_rate',
+                                      event.target.value,
+                                    )
+                                  )
+                                }
+                              />
+                            </label>
+
+                            <label>
+                              Monthly payment
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                required
+                                value={
+                                  editForm
+                                    .monthly_payment
+                                }
+                                onChange={
+                                  (
+                                    event,
+                                  ) => (
+                                    updateFormField(
+                                      'monthly_payment',
+                                      event.target.value,
+                                    )
+                                  )
+                                }
+                              />
+                            </label>
+
+                            <label>
+                              Monthly rent
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                required
+                                value={
+                                  editForm
+                                    .monthly_rent
+                                }
+                                onChange={
+                                  (
+                                    event,
+                                  ) => (
+                                    updateFormField(
+                                      'monthly_rent',
+                                      event.target.value,
+                                    )
+                                  )
+                                }
+                              />
+                            </label>
+
+                            <label>
+                              Monthly expenses
+                              <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                required
+                                value={
+                                  editForm
+                                    .monthly_expenses
+                                }
+                                onChange={
+                                  (
+                                    event,
+                                  ) => (
+                                    updateFormField(
+                                      'monthly_expenses',
+                                      event.target.value,
+                                    )
+                                  )
+                                }
+                              />
+                            </label>
+
+                            <div className="target-actions">
+                              <button
+                                className="target-secondary-button"
+                                type="button"
+                                disabled={saving}
+                                onClick={
+                                  cancelEditing
+                                }
+                              >
+                                Cancel
+                              </button>
+
+                              <button
+                                className="target-primary-button"
+                                type="submit"
+                                disabled={saving}
+                              >
+                                {
+                                  saving
+                                    ? 'Saving...'
+                                    : 'Save changes'
+                                }
+                              </button>
+                            </div>
+
+                            {
+                              actionError
+                                ? (
+                                    <p className="negative">
+                                      {actionError}
+                                    </p>
+                                  )
+                                : null
+                            }
+                          </form>
+                        )
+                      : null
+                  }
+
+
                   <section className="kpi-grid">
-                    <article className="kpi-card">
-                      <div className="kpi-label">
-                        Current value
-                      </div>
-
-                      <div className="kpi-value">
-                        {
-                          formatCurrency(
-                            property.current_value,
-                            property.currency,
-                          )
-                        }
-                      </div>
-
-                      <div className="kpi-subvalue">
-                        Purchase price:{' '}
-                        {
-                          formatCurrency(
+                    <MetricCard
+                      label="Current value"
+                      value={
+                        formatCurrency(
+                          property.current_value,
+                          property.currency,
+                        )
+                      }
+                      subvalue={
+                        (
+                          'Purchase price: '
+                          + formatCurrency(
                             property.purchase_price,
                             property.currency,
                           )
-                        }
-                      </div>
-                    </article>
+                        )
+                      }
+                    />
 
-
-                    <article className="kpi-card">
-                      <div className="kpi-label">
-                        Equity
-                      </div>
-
-                      <div
-                        className={
-                          `kpi-value ${
-                            getValueClass(
-                              property.equity,
-                            )
-                          }`
-                        }
-                      >
-                        {
-                          formatCurrency(
-                            property.equity,
-                            property.currency,
-                          )
-                        }
-                      </div>
-
-                      <div className="kpi-subvalue">
-                        Down payment:{' '}
-                        {
-                          formatCurrency(
+                    <MetricCard
+                      label="Equity"
+                      value={
+                        formatCurrency(
+                          property.equity,
+                          property.currency,
+                        )
+                      }
+                      subvalue={
+                        (
+                          'Down payment: '
+                          + formatCurrency(
                             property.down_payment,
                             property.currency,
                           )
-                        }
-                      </div>
-                    </article>
+                        )
+                      }
+                      valueClass={
+                        getValueClass(
+                          property.equity,
+                        )
+                      }
+                    />
 
-
-                    <article className="kpi-card">
-                      <div className="kpi-label">
-                        Mortgage
-                      </div>
-
-                      <div className="kpi-value">
-                        {
-                          formatCurrency(
-                            property.loan_balance,
-                            property.currency,
-                          )
-                        }
-                      </div>
-
-                      <div className="kpi-subvalue">
-                        LTV:{' '}
-                        {
-                          formatPercent(
+                    <MetricCard
+                      label="Mortgage"
+                      value={
+                        formatCurrency(
+                          property.loan_balance,
+                          property.currency,
+                        )
+                      }
+                      subvalue={
+                        (
+                          'LTV: '
+                          + formatPercent(
                             property.loan_to_value,
                           )
-                        }
-                      </div>
-                    </article>
+                        )
+                      }
+                    />
 
-
-                    <article className="kpi-card">
-                      <div className="kpi-label">
-                        Interest rate
-                      </div>
-
-                      <div className="kpi-value">
-                        {
-                          property.interest_rate
-                          !== null
-                            ? formatPercent(
-                                property
-                                  .interest_rate,
-                              )
-                            : '\u2014'
-                        }
-                      </div>
-
-                      <div className="kpi-subvalue">
-                        Monthly payment:{' '}
-                        {
-                          formatCurrency(
+                    <MetricCard
+                      label="Interest rate"
+                      value={
+                        property.interest_rate
+                        !== null
+                          ? formatPercent(
+                              property.interest_rate,
+                            )
+                          : '\u2014'
+                      }
+                      subvalue={
+                        (
+                          'Monthly payment: '
+                          + formatCurrency(
                             property.monthly_payment,
                             property.currency,
                           )
-                        }
-                      </div>
-                    </article>
+                        )
+                      }
+                    />
 
+                    <MetricCard
+                      label="Gross yield"
+                      value={
+                        formatPercent(
+                          property
+                            .gross_rental_yield,
+                        )
+                      }
+                      subvalue={
+                        (
+                          'Annual rent divided '
+                          + 'by value'
+                        )
+                      }
+                    />
 
-                    <article className="kpi-card">
-                      <div className="kpi-label">
-                        Gross yield
-                      </div>
-
-                      <div className="kpi-value">
-                        {
-                          formatPercent(
-                            property
-                              .gross_rental_yield,
-                          )
-                        }
-                      </div>
-
-                      <div className="kpi-subvalue">
-                        Annual rent divided
-                        by value
-                      </div>
-                    </article>
-
-
-                    <article className="kpi-card">
-                      <div className="kpi-label">
-                        Net yield
-                      </div>
-
-                      <div className="kpi-value">
-                        {
-                          formatPercent(
-                            property
-                              .net_rental_yield,
-                          )
-                        }
-                      </div>
-
-                      <div className="kpi-subvalue">
-                        After property expenses
-                      </div>
-                    </article>
+                    <MetricCard
+                      label="Net yield"
+                      value={
+                        formatPercent(
+                          property
+                            .net_rental_yield,
+                        )
+                      }
+                      subvalue={
+                        'After property expenses'
+                      }
+                    />
                   </section>
 
 
