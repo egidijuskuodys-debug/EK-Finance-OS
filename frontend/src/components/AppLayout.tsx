@@ -14,6 +14,10 @@ const navigationItems = [
     path: '/investments',
   },
   {
+    label: 'Real estate',
+    path: '/real-estate',
+  },
+  {
     label: 'Transactions',
     path: '/transactions',
   },
@@ -100,4 +104,3 @@ function AppLayout() {
 
 
 export default AppLayout
-

@@ -11,6 +11,7 @@ import DividendsPage from './pages/DividendsPage'
 import ImportPage from './pages/ImportPage'
 import InvestmentsPage from './pages/InvestmentsPage'
 import PortfolioTargetsPage from './pages/PortfolioTargetsPage'
+import RealEstatePage from './pages/RealEstatePage'
 import TransactionsPage from './pages/TransactionsPage'
 
 
@@ -52,6 +53,11 @@ function App() {
           <Route
             path="/portfolio-targets"
             element={<PortfolioTargetsPage />}
+          />
+
+          <Route
+            path="/real-estate"
+            element={<RealEstatePage />}
           />
 
           <Route
