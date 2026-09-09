@@ -101,6 +101,7 @@ function DashboardPage() {
     return (
       <div className="loading-state">
         <h1>EK Finance OS</h1>
+
         <p>
           Loading dashboard...
         </p>
@@ -113,6 +114,7 @@ function DashboardPage() {
     return (
       <div className="error-state">
         <h1>EK Finance OS</h1>
+
         <p>{error}</p>
       </div>
     )
@@ -123,6 +125,7 @@ function DashboardPage() {
     return (
       <div className="empty-state">
         <h1>EK Finance OS</h1>
+
         <p>
           No dashboard data available.
         </p>
@@ -285,12 +288,183 @@ function DashboardPage() {
                 ? formatPercent(
                     dashboard.xirr,
                   )
-                : 'ā€”'
+                : '\u2014'
             }
           </div>
 
           <div className="kpi-subvalue">
             Annualized money-weighted return
+          </div>
+        </article>
+      </section>
+
+
+      <section className="kpi-grid">
+        <article className="kpi-card">
+          <div className="kpi-label">
+            Total invested
+          </div>
+
+          <div className="kpi-value">
+            {formatCurrency(
+              dashboard.total_invested,
+              dashboard.base_currency,
+            )}
+          </div>
+
+          <div className="kpi-subvalue">
+            Total acquisition cost
+          </div>
+        </article>
+
+
+        <article className="kpi-card">
+          <div className="kpi-label">
+            Total profit
+          </div>
+
+          <div
+            className={
+              `kpi-value ${
+                getValueClass(
+                  dashboard.total_profit,
+                )
+              }`
+            }
+          >
+            {formatCurrency(
+              dashboard.total_profit,
+              dashboard.base_currency,
+            )}
+          </div>
+
+          <div
+            className={
+              `kpi-subvalue ${
+                getValueClass(
+                  dashboard
+                    .total_return_percent,
+                )
+              }`
+            }
+          >
+            {formatPercent(
+              dashboard.total_return_percent,
+            )}
+          </div>
+        </article>
+
+
+        <article className="kpi-card">
+          <div className="kpi-label">
+            Unrealized profit
+          </div>
+
+          <div
+            className={
+              `kpi-value ${
+                getValueClass(
+                  dashboard.unrealized_profit,
+                )
+              }`
+            }
+          >
+            {formatCurrency(
+              dashboard.unrealized_profit,
+              dashboard.base_currency,
+            )}
+          </div>
+
+          <div
+            className={
+              `kpi-subvalue ${
+                getValueClass(
+                  dashboard
+                    .unrealized_profit_percent,
+                )
+              }`
+            }
+          >
+            {formatPercent(
+              dashboard
+                .unrealized_profit_percent,
+            )}
+          </div>
+        </article>
+
+
+        <article className="kpi-card">
+          <div className="kpi-label">
+            Realized profit
+          </div>
+
+          <div
+            className={
+              `kpi-value ${
+                getValueClass(
+                  dashboard.realized_profit,
+                )
+              }`
+            }
+          >
+            {formatCurrency(
+              dashboard.realized_profit,
+              dashboard.base_currency,
+            )}
+          </div>
+
+          <div className="kpi-subvalue">
+            Profit from completed sales
+          </div>
+        </article>
+
+
+        <article className="kpi-card">
+          <div className="kpi-label">
+            Net dividends
+          </div>
+
+          <div
+            className={
+              `kpi-value ${
+                getValueClass(
+                  dashboard.dividend_net,
+                )
+              }`
+            }
+          >
+            {formatCurrency(
+              dashboard.dividend_net,
+              dashboard.base_currency,
+            )}
+          </div>
+
+          <div className="kpi-subvalue">
+            Dividends after tax
+          </div>
+        </article>
+
+
+        <article className="kpi-card">
+          <div className="kpi-label">
+            Total quantity
+          </div>
+
+          <div className="kpi-value">
+            {
+              dashboard
+                .total_quantity
+                .toLocaleString(
+                  'lt-LT',
+                  {
+                    maximumFractionDigits: 4,
+                  },
+                )
+            }
+          </div>
+
+          <div className="kpi-subvalue">
+            Units across all positions
           </div>
         </article>
       </section>
@@ -338,13 +512,17 @@ function DashboardPage() {
               <thead>
                 <tr>
                   <th>Ticker</th>
+
                   <th>Type</th>
+
                   <th className="number">
                     Value
                   </th>
+
                   <th className="number">
                     P/L
                   </th>
+
                   <th className="number">
                     Return
                   </th>
@@ -528,7 +706,7 @@ function DashboardPage() {
               {
                 dashboard
                   .best_position
-                ?? 'ā€”'
+                ?? '\u2014'
               }
             </strong>
           </p>
@@ -539,7 +717,7 @@ function DashboardPage() {
               {
                 dashboard
                   .worst_position
-                ?? 'ā€”'
+                ?? '\u2014'
               }
             </strong>
           </p>
@@ -566,5 +744,3 @@ function DashboardPage() {
 
 
 export default DashboardPage
-
-
