@@ -12,6 +12,7 @@ import {
   getRealEstateSummary,
   updateRealEstateProperty,
 } from '../api/realEstate'
+import RealEstateProjectionPanel from '../components/RealEstateProjectionPanel'
 import type {
   RealEstateProperty,
   RealEstateSummary,
@@ -1051,6 +1052,22 @@ function RealEstatePage() {
                 </section>
               ),
             )
+      }
+            {
+        properties.map(
+          (
+            property,
+          ) => (
+            <RealEstateProjectionPanel
+              key={
+                `projection-${property.id}`
+              }
+              propertyId={property.id}
+              propertyName={property.name}
+              currency={property.currency}
+            />
+          ),
+        )
       }
     </main>
   )

@@ -19,6 +19,7 @@ export interface RealEstateProperty {
 
   currency: string
   purchase_date: string | null
+  loan_end_date: string | null
 
   equity: number
 
@@ -72,9 +73,42 @@ export interface RealEstateCreate {
 
   currency: string
   purchase_date: string | null
+  loan_end_date: string | null
 }
 
 
 export type RealEstateUpdate = Partial<
   RealEstateCreate
 >
+
+
+export interface RealEstateProjectionPoint {
+  year: number
+  projection_date: string
+
+  property_value: number
+  loan_balance: number
+  equity: number
+
+  principal_paid: number
+  interest_paid: number
+}
+
+
+export interface RealEstateProjection {
+  property_id: number
+  property_name: string
+  currency: string
+
+  annual_property_growth: number
+  annual_interest_rate: number
+  monthly_payment: number
+
+  loan_end_date: string | null
+  projection_years: number
+
+  total_principal_paid: number
+  total_interest_paid: number
+
+  points: RealEstateProjectionPoint[]
+}

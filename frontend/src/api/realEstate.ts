@@ -1,5 +1,6 @@
 import type {
   RealEstateCreate,
+  RealEstateProjection,
   RealEstateProperty,
   RealEstateSummary,
   RealEstateUpdate,
@@ -68,6 +69,46 @@ Promise<RealEstateSummary> {
   const data = await response.json()
 
   return data as RealEstateSummary
+}
+
+
+export async function getRealEstateProjection(
+  propertyId: number,
+  annualPropertyGrowth: number,
+  projectionYears: number,
+): Promise<RealEstateProjection> {
+  const query = new URLSearchParams({
+    annual_property_growth: (
+      String(
+        annualPropertyGrowth,
+      )
+    ),
+    projection_years: (
+      String(
+        projectionYears,
+      )
+    ),
+  })
+
+  const response = await fetch(
+    (
+      `${API_BASE_URL}/real-estate/`
+      + `${propertyId}/projection?`
+      + query.toString()
+    ),
+  )
+
+  if (!response.ok) {
+    throw new Error(
+      await getErrorMessage(
+        response,
+      ),
+    )
+  }
+
+  const data = await response.json()
+
+  return data as RealEstateProjection
 }
 
 
