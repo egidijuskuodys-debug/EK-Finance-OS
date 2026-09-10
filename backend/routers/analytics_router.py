@@ -1,8 +1,14 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import (
+    APIRouter,
+    Depends,
+    Query,
+)
 from sqlalchemy.orm import Session
 
 from database.db import get_db
-
+from schemas.net_worth_projection import (
+    NetWorthProjectionResponse,
+)
 from services.analytics_service import (
     get_allocation,
     get_dividend_summary,
@@ -11,6 +17,9 @@ from services.analytics_service import (
     get_performance,
     get_summary,
     recalculate_portfolio,
+)
+from services.net_worth_projection_service import (
+    get_net_worth_projection,
 )
 from services.performance_breakdown_service import (
     get_performance_breakdown,
@@ -52,51 +61,79 @@ router = APIRouter(
 
 @router.get("/summary")
 def portfolio_summary(
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
-    return get_summary(db)
+    return get_summary(
+        db
+    )
 
 
 @router.get("/allocation")
 def portfolio_allocation(
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
-    return get_allocation(db)
+    return get_allocation(
+        db
+    )
 
 
 @router.get("/risk")
 def portfolio_risk(
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
-    return get_portfolio_risk(db)
+    return get_portfolio_risk(
+        db
+    )
 
 
 @router.get("/health")
 def portfolio_health(
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
-    return get_portfolio_health(db)
+    return get_portfolio_health(
+        db
+    )
 
 
 @router.get("/insights")
 def portfolio_insights(
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
-    return get_portfolio_insights(db)
+    return get_portfolio_insights(
+        db
+    )
 
 
 @router.get("/actions")
 def portfolio_actions(
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
-    return get_portfolio_actions(db)
+    return get_portfolio_actions(
+        db
+    )
 
 
 @router.get("/rebalancing")
 def portfolio_rebalancing(
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
-    return get_portfolio_rebalancing(db)
+    return get_portfolio_rebalancing(
+        db
+    )
 
 
 @router.get("/contribution-plan")
@@ -105,7 +142,9 @@ def portfolio_contribution_plan(
         default=1000.0,
         gt=0,
     ),
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
     return get_contribution_plan(
         db,
@@ -124,66 +163,143 @@ def portfolio_projection(
         gt=-100,
         le=100,
     ),
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
     return get_portfolio_projection(
         db=db,
-        monthly_contribution=monthly_contribution,
-        annual_return_percent=annual_return_percent,
+        monthly_contribution=(
+            monthly_contribution
+        ),
+        annual_return_percent=(
+            annual_return_percent
+        ),
+    )
+
+
+@router.get(
+    "/net-worth-projection",
+    response_model=(
+        NetWorthProjectionResponse
+    ),
+)
+def net_worth_projection(
+    monthly_contribution: float = Query(
+        default=1000.0,
+        ge=0,
+    ),
+    annual_return_percent: float = Query(
+        default=7.0,
+        gt=-100,
+        le=100,
+    ),
+    annual_property_growth: float = Query(
+        default=2.0,
+        gt=-100,
+        le=100,
+    ),
+    db: Session = Depends(
+        get_db
+    ),
+):
+    return get_net_worth_projection(
+        db=db,
+        monthly_contribution=(
+            monthly_contribution
+        ),
+        annual_return_percent=(
+            annual_return_percent
+        ),
+        annual_property_growth=(
+            annual_property_growth
+        ),
     )
 
 
 @router.get("/performance")
 def portfolio_performance(
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
-    return get_performance(db)
+    return get_performance(
+        db
+    )
 
 
 @router.get("/performance-breakdown")
 def portfolio_performance_breakdown(
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
-    return get_performance_breakdown(db)
+    return get_performance_breakdown(
+        db
+    )
 
 
 @router.get("/xirr")
 def portfolio_xirr(
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
-    return get_portfolio_xirr(db)
+    return get_portfolio_xirr(
+        db
+    )
 
 
 @router.get("/portfolio-history")
 def portfolio_history(
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
-    return get_portfolio_history(db)
+    return get_portfolio_history(
+        db
+    )
 
 
 @router.get("/dividends/summary")
 def dividend_summary(
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
-    return get_dividend_summary(db)
+    return get_dividend_summary(
+        db
+    )
 
 
 @router.get("/dividends/by-year")
 def dividends_by_year(
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
-    return get_dividends_by_year(db)
+    return get_dividends_by_year(
+        db
+    )
 
 
 @router.get("/dividends/by-investment")
 def dividends_by_investment(
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
-    return get_dividends_by_investment(db)
+    return get_dividends_by_investment(
+        db
+    )
 
 
 @router.post("/recalculate")
 def recalculate(
-    db: Session = Depends(get_db),
+    db: Session = Depends(
+        get_db
+    ),
 ):
-    return recalculate_portfolio(db)
+    return recalculate_portfolio(
+        db
+    )
