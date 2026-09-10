@@ -4,6 +4,7 @@
 } from 'react'
 
 import { getDashboard } from '../api/dashboard'
+import NetWorthProjectionPanel from '../components/NetWorthProjectionPanel'
 import PortfolioActionsPanel from '../components/PortfolioActionsPanel'
 import PortfolioHealthPanel from '../components/PortfolioHealthPanel'
 import PortfolioHistoryChart from '../components/PortfolioHistoryChart'
@@ -839,6 +840,7 @@ function DashboardPage() {
 
 
       <PortfolioHealthPanel />
+            <NetWorthProjectionPanel />
 
 
       <PortfolioActionsPanel />
