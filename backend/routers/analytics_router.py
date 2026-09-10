@@ -6,6 +6,9 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 from database.db import get_db
+from schemas.financial_independence import (
+    FinancialIndependenceResponse,
+)
 from schemas.net_worth_projection import (
     NetWorthProjectionResponse,
 )
@@ -17,6 +20,9 @@ from services.analytics_service import (
     get_performance,
     get_summary,
     recalculate_portfolio,
+)
+from services.financial_independence_service import (
+    get_financial_independence_projection,
 )
 from services.net_worth_projection_service import (
     get_net_worth_projection,
@@ -214,6 +220,68 @@ def net_worth_projection(
         annual_property_growth=(
             annual_property_growth
         ),
+    )
+
+
+@router.get(
+    "/financial-independence",
+    response_model=(
+        FinancialIndependenceResponse
+    ),
+)
+def financial_independence(
+    monthly_income_target: float = Query(
+        default=1000.0,
+        gt=0,
+    ),
+    withdrawal_rate_percent: float = Query(
+        default=4.0,
+        gt=0,
+        le=100,
+    ),
+    monthly_contribution: float = Query(
+        default=1000.0,
+        ge=0,
+    ),
+    annual_return_percent: float = Query(
+        default=7.0,
+        gt=-100,
+        le=100,
+    ),
+    annual_property_growth: float = Query(
+        default=2.0,
+        gt=-100,
+        le=100,
+    ),
+    current_age: int = Query(
+        default=45,
+        ge=0,
+        le=120,
+    ),
+    db: Session = Depends(
+        get_db
+    ),
+):
+    return (
+        get_financial_independence_projection(
+            db=db,
+            monthly_income_target=(
+                monthly_income_target
+            ),
+            withdrawal_rate_percent=(
+                withdrawal_rate_percent
+            ),
+            monthly_contribution=(
+                monthly_contribution
+            ),
+            annual_return_percent=(
+                annual_return_percent
+            ),
+            annual_property_growth=(
+                annual_property_growth
+            ),
+            current_age=current_age,
+        )
     )
 
 
