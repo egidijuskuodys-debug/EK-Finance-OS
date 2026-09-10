@@ -10,7 +10,9 @@ from database.db import Base
 
 
 class RealEstateProperty(Base):
-    __tablename__ = "real_estate_properties"
+    __tablename__ = (
+        "real_estate_properties"
+    )
 
     id = Column(
         Integer,
@@ -92,6 +94,11 @@ class RealEstateProperty(Base):
     )
 
     purchase_date = Column(
+        Date,
+        nullable=True,
+    )
+
+    loan_end_date = Column(
         Date,
         nullable=True,
     )

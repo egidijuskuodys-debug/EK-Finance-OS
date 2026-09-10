@@ -75,6 +75,8 @@ class RealEstateBase(BaseModel):
 
     purchase_date: date | None = None
 
+    loan_end_date: date | None = None
+
 
 class RealEstateCreate(
     RealEstateBase
@@ -152,6 +154,8 @@ class RealEstateUpdate(BaseModel):
     )
 
     purchase_date: date | None = None
+
+    loan_end_date: date | None = None
 
 
 class RealEstateResponse(

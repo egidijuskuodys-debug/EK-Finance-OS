@@ -175,6 +175,10 @@ def serialize_property(
             property_record
             .purchase_date
         ),
+        "loan_end_date": (
+            property_record
+            .loan_end_date
+        ),
         "equity": round(
             equity,
             2,
