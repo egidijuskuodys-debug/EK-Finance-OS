@@ -1,25 +1,33 @@
 from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    model_validator,
+)
 
 
 class DividendBase(BaseModel):
-    investment_id: int = Field(gt=0)
+    investment_id: int = Field(
+        gt=0,
+    )
 
     payment_date: date
 
-    gross_amount: float = Field(gt=0)
+    gross_amount: float = Field(
+        ne=0,
+    )
 
     tax_amount: float = Field(
         default=0,
         ge=0,
     )
 
-    net_amount: Optional[float] = Field(
-        default=None,
-        ge=0,
-    )
+    net_amount: Optional[
+        float
+    ] = None
 
     currency: str = Field(
         default="EUR",
@@ -34,15 +42,20 @@ class DividendBase(BaseModel):
 
     @model_validator(mode="after")
     def calculate_net_amount(self):
+        if (
+            self.gross_amount > 0
+            and self.tax_amount
+            > self.gross_amount
+        ):
+            raise ValueError(
+                "Tax amount cannot exceed "
+                "a positive gross amount."
+            )
+
         calculated_net = (
             self.gross_amount
             - self.tax_amount
         )
-
-        if calculated_net < 0:
-            raise ValueError(
-                "Tax amount cannot exceed gross amount."
-            )
 
         if self.net_amount is None:
             self.net_amount = round(
@@ -53,46 +66,61 @@ class DividendBase(BaseModel):
         return self
 
 
-class DividendCreate(DividendBase):
+class DividendCreate(
+    DividendBase
+):
     pass
 
 
 class DividendUpdate(BaseModel):
-    investment_id: Optional[int] = Field(
+    investment_id: Optional[
+        int
+    ] = Field(
         default=None,
         gt=0,
     )
 
-    payment_date: Optional[date] = None
+    payment_date: Optional[
+        date
+    ] = None
 
-    gross_amount: Optional[float] = Field(
+    gross_amount: Optional[
+        float
+    ] = Field(
         default=None,
-        gt=0,
+        ne=0,
     )
 
-    tax_amount: Optional[float] = Field(
+    tax_amount: Optional[
+        float
+    ] = Field(
         default=None,
         ge=0,
     )
 
-    net_amount: Optional[float] = Field(
-        default=None,
-        ge=0,
-    )
+    net_amount: Optional[
+        float
+    ] = None
 
-    currency: Optional[str] = Field(
+    currency: Optional[
+        str
+    ] = Field(
         default=None,
         min_length=3,
         max_length=10,
     )
 
-    notes: Optional[str] = Field(
+    notes: Optional[
+        str
+    ] = Field(
         default=None,
         max_length=500,
     )
 
 
-class DividendResponse(DividendBase):
+class DividendResponse(
+    DividendBase
+):
     id: int
 
     model_config = ConfigDict(

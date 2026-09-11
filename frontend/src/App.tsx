@@ -1,4 +1,8 @@
 ﻿import {
+  lazy,
+  Suspense,
+} from 'react'
+import {
   BrowserRouter,
   Navigate,
   Route,
@@ -6,66 +10,127 @@
 } from 'react-router-dom'
 
 import AppLayout from './components/AppLayout'
-import DashboardPage from './pages/DashboardPage'
-import DividendsPage from './pages/DividendsPage'
-import ImportPage from './pages/ImportPage'
-import InvestmentsPage from './pages/InvestmentsPage'
-import PortfolioTargetsPage from './pages/PortfolioTargetsPage'
-import RealEstatePage from './pages/RealEstatePage'
-import TransactionsPage from './pages/TransactionsPage'
+
+
+const DashboardPage = lazy(
+  () => import(
+    './pages/DashboardPage'
+  ),
+)
+
+const DividendsPage = lazy(
+  () => import(
+    './pages/DividendsPage'
+  ),
+)
+
+const ImportPage = lazy(
+  () => import(
+    './pages/ImportPage'
+  ),
+)
+
+const InvestmentsPage = lazy(
+  () => import(
+    './pages/InvestmentsPage'
+  ),
+)
+
+const PortfolioTargetsPage = lazy(
+  () => import(
+    './pages/PortfolioTargetsPage'
+  ),
+)
+
+const RealEstatePage = lazy(
+  () => import(
+    './pages/RealEstatePage'
+  ),
+)
+
+const TransactionsPage = lazy(
+  () => import(
+    './pages/TransactionsPage'
+  ),
+)
+
+
+function PageLoadingState() {
+  return (
+    <main>
+      <div className="loading-state">
+        <h1>
+          Loading
+        </h1>
+
+        <p>
+          Loading page...
+        </p>
+      </div>
+    </main>
+  )
+}
 
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<AppLayout />}>
-          <Route
-            path="/"
-            element={
-              <Navigate
-                to="/dashboard"
-                replace
-              />
-            }
-          />
+      <Suspense
+        fallback={
+          <PageLoadingState />
+        }
+      >
+        <Routes>
+          <Route element={<AppLayout />}>
+            <Route
+              path="/"
+              element={
+                <Navigate
+                  to="/dashboard"
+                  replace
+                />
+              }
+            />
 
-          <Route
-            path="/dashboard"
-            element={<DashboardPage />}
-          />
+            <Route
+              path="/dashboard"
+              element={<DashboardPage />}
+            />
 
-          <Route
-            path="/investments"
-            element={<InvestmentsPage />}
-          />
+            <Route
+              path="/investments"
+              element={<InvestmentsPage />}
+            />
 
-          <Route
-            path="/transactions"
-            element={<TransactionsPage />}
-          />
+            <Route
+              path="/transactions"
+              element={<TransactionsPage />}
+            />
 
-          <Route
-            path="/dividends"
-            element={<DividendsPage />}
-          />
+            <Route
+              path="/dividends"
+              element={<DividendsPage />}
+            />
 
-          <Route
-            path="/portfolio-targets"
-            element={<PortfolioTargetsPage />}
-          />
+            <Route
+              path="/portfolio-targets"
+              element={
+                <PortfolioTargetsPage />
+              }
+            />
 
-          <Route
-            path="/real-estate"
-            element={<RealEstatePage />}
-          />
+            <Route
+              path="/real-estate"
+              element={<RealEstatePage />}
+            />
 
-          <Route
-            path="/import"
-            element={<ImportPage />}
-          />
-        </Route>
-      </Routes>
+            <Route
+              path="/import"
+              element={<ImportPage />}
+            />
+          </Route>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   )
 }
