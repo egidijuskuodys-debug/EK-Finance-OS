@@ -10,6 +10,10 @@ const navigationItems = [
     path: '/dashboard',
   },
   {
+    label: 'Monthly plan',
+    path: '/monthly-plan',
+  },
+  {
     label: 'Investments',
     path: '/investments',
   },

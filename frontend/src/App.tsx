@@ -36,6 +36,12 @@ const InvestmentsPage = lazy(
   ),
 )
 
+const MonthlyInvestmentPlanPage = lazy(
+  () => import(
+    './pages/MonthlyInvestmentPlanPage'
+  ),
+)
+
 const PortfolioTargetsPage = lazy(
   () => import(
     './pages/PortfolioTargetsPage'
@@ -95,6 +101,13 @@ function App() {
             <Route
               path="/dashboard"
               element={<DashboardPage />}
+            />
+
+            <Route
+              path="/monthly-plan"
+              element={
+                <MonthlyInvestmentPlanPage />
+              }
             />
 
             <Route
