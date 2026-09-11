@@ -24,6 +24,9 @@ from services.analytics_service import (
 from services.financial_independence_service import (
     get_financial_independence_projection,
 )
+from services.monthly_investment_plan_service import (
+    get_monthly_investment_plan,
+)
 from services.net_worth_projection_service import (
     get_net_worth_projection,
 )
@@ -155,6 +158,24 @@ def portfolio_contribution_plan(
     return get_contribution_plan(
         db,
         amount,
+    )
+
+
+@router.get("/monthly-investment-plan")
+def monthly_investment_plan(
+    monthly_amount: float = Query(
+        default=1000.0,
+        gt=0,
+    ),
+    db: Session = Depends(
+        get_db
+    ),
+):
+    return get_monthly_investment_plan(
+        db=db,
+        monthly_amount=(
+            monthly_amount
+        ),
     )
 
 
