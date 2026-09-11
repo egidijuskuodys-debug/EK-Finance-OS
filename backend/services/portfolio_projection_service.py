@@ -1,9 +1,15 @@
 from sqlalchemy.orm import Session
 
-from services.analytics_service import get_summary
+from services.performance_service import (
+    get_portfolio_xirr,
+)
 
 
-DEFAULT_MILESTONE_YEARS = (5, 10, 15)
+DEFAULT_MILESTONE_YEARS = (
+    5,
+    10,
+    15,
+)
 
 
 def _project_value(
@@ -28,12 +34,21 @@ def get_portfolio_projection(
     monthly_contribution: float,
     annual_return_percent: float,
 ):
-    summary = get_summary(db)
+    performance_summary = (
+        get_portfolio_xirr(db)
+    )
 
     starting_value = float(
-        summary.get(
-            "portfolio_value",
+        performance_summary.get(
+            "total_wealth",
             0.0,
+        )
+    )
+
+    currency = str(
+        performance_summary.get(
+            "base_currency",
+            "EUR",
         )
     )
 
@@ -41,6 +56,7 @@ def get_portfolio_projection(
         annual_return_percent
         / 100
     )
+
     monthly_rate = (
         (1 + annual_rate) ** (1 / 12)
         - 1
@@ -48,19 +64,30 @@ def get_portfolio_projection(
 
     milestones = []
 
-    for years in DEFAULT_MILESTONE_YEARS:
+    for years in (
+        DEFAULT_MILESTONE_YEARS
+    ):
         months = years * 12
 
-        projected_value = _project_value(
-            starting_value=starting_value,
-            monthly_contribution=monthly_contribution,
-            monthly_rate=monthly_rate,
-            months=months,
+        projected_value = (
+            _project_value(
+                starting_value=(
+                    starting_value
+                ),
+                monthly_contribution=(
+                    monthly_contribution
+                ),
+                monthly_rate=(
+                    monthly_rate
+                ),
+                months=months,
+            )
         )
 
         total_contributions = (
             starting_value
-            + monthly_contribution * months
+            + monthly_contribution
+            * months
         )
 
         investment_growth = (
@@ -88,17 +115,29 @@ def get_portfolio_projection(
 
     yearly_projection = []
 
+    maximum_years = max(
+        DEFAULT_MILESTONE_YEARS
+    )
+
     for years in range(
         0,
-        max(DEFAULT_MILESTONE_YEARS) + 1,
+        maximum_years + 1,
     ):
         months = years * 12
 
-        projected_value = _project_value(
-            starting_value=starting_value,
-            monthly_contribution=monthly_contribution,
-            monthly_rate=monthly_rate,
-            months=months,
+        projected_value = (
+            _project_value(
+                starting_value=(
+                    starting_value
+                ),
+                monthly_contribution=(
+                    monthly_contribution
+                ),
+                monthly_rate=(
+                    monthly_rate
+                ),
+                months=months,
+            )
         )
 
         yearly_projection.append(
@@ -112,7 +151,7 @@ def get_portfolio_projection(
         )
 
     return {
-        "currency": "EUR",
+        "currency": currency,
         "starting_value": round(
             starting_value,
             2,
@@ -126,5 +165,7 @@ def get_portfolio_projection(
             2,
         ),
         "milestones": milestones,
-        "yearly_projection": yearly_projection,
+        "yearly_projection": (
+            yearly_projection
+        ),
     }
