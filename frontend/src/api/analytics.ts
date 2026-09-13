@@ -248,7 +248,7 @@ export type PortfolioActions = {
 }
 
 
-const API_BASE_URL = 'http://localhost:8000'
+const API_BASE_URL = window.location.origin.replace(':5173', ':8000')
 
 
 export async function getPortfolioHistory():

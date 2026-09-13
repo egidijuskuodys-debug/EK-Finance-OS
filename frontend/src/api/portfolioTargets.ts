@@ -1,10 +1,10 @@
-﻿import type {
+import type {
   PortfolioTarget,
   PortfolioTargetInput,
   PortfolioTargetUpdate,
 } from '../types/portfolioTarget'
 
-const API_BASE_URL = 'http://localhost:8000'
+const API_BASE_URL = window.location.origin.replace(':5173', ':8000')
 
 
 async function parseError(

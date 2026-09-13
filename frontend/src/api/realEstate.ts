@@ -8,7 +8,7 @@ import type {
 
 
 const API_BASE_URL = (
-  'http://localhost:8000'
+  window.location.origin.replace(':5173', ':8000')
 )
 
 
