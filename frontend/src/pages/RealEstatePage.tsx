@@ -13,6 +13,7 @@ import {
   updateRealEstateProperty,
 } from '../api/realEstate'
 import RealEstateProjectionPanel from '../components/RealEstateProjectionPanel'
+import MortgageVsInvestPanel from '../components/MortgageVsInvestPanel'
 import type {
   RealEstateProperty,
   RealEstateSummary,
@@ -1061,6 +1062,22 @@ function RealEstatePage() {
             <RealEstateProjectionPanel
               key={
                 `projection-${property.id}`
+              }
+              propertyId={property.id}
+              propertyName={property.name}
+              currency={property.currency}
+            />
+          ),
+        )
+      }
+            {
+        properties.map(
+          (
+            property,
+          ) => (
+            <MortgageVsInvestPanel
+              key={
+                `mortgage-${property.id}`
               }
               propertyId={property.id}
               propertyName={property.name}

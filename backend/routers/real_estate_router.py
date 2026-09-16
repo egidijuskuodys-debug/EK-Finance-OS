@@ -8,6 +8,10 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 from database.db import get_db
+from schemas.mortgage_vs_invest import (
+    MortgageVsInvestRequest,
+    MortgageVsInvestResponse,
+)
 from schemas.real_estate import (
     RealEstateCreate,
     RealEstateResponse,
@@ -18,6 +22,7 @@ from schemas.real_estate_projection import (
     RealEstateProjectionResponse,
 )
 from services import (
+    mortgage_vs_invest_service,
     real_estate_projection_service,
     real_estate_service,
 )
@@ -114,6 +119,43 @@ def get_property_projection(
         )
 
     return projection
+
+
+@router.post(
+    "/{property_id}/mortgage-vs-invest",
+    response_model=(
+        MortgageVsInvestResponse
+    ),
+)
+def compare_mortgage_vs_invest(
+    property_id: int,
+    request: MortgageVsInvestRequest,
+    db: Session = Depends(
+        get_db
+    ),
+):
+    comparison = (
+        mortgage_vs_invest_service
+        .get_mortgage_vs_invest(
+            db=db,
+            property_id=property_id,
+            request=request,
+        )
+    )
+
+    if comparison is None:
+        raise HTTPException(
+            status_code=(
+                status
+                .HTTP_404_NOT_FOUND
+            ),
+            detail=(
+                "Real estate property "
+                "not found."
+            ),
+        )
+
+    return comparison
 
 
 @router.get(
