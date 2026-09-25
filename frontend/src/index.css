@@ -783,6 +783,22 @@ main {
   align-items: end;
 }
 
+.mortgage-compare-form {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.mortgage-compare-form .mortgage-base-field {
+  grid-column: span 3;
+}
+
+.mortgage-compare-form .mortgage-return-field {
+  grid-column: span 2;
+}
+
+.mortgage-compare-form > button {
+  grid-column: 1 / -1;
+}
+
 .target-form label {
   display: grid;
   gap: 7px;
@@ -873,6 +889,15 @@ main {
   .target-form {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .mortgage-compare-form .mortgage-base-field,
+  .mortgage-compare-form .mortgage-return-field {
+    grid-column: auto;
+  }
+
+  .mortgage-compare-form .mortgage-return-field:last-of-type {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 620px) {
@@ -883,6 +908,10 @@ main {
 
   .target-actions {
     flex-direction: column;
+  }
+
+  .mortgage-compare-form .mortgage-return-field:last-of-type {
+    grid-column: auto;
   }
 }
 

@@ -325,10 +325,10 @@ function MortgageVsInvestPanel({
 
 
       <form
-        className="target-form"
+        className="target-form mortgage-compare-form"
         onSubmit={submitCalculation}
       >
-        <label>
+        <label className="mortgage-base-field">
           Additional monthly budget
           <input
             type="number"
@@ -348,7 +348,7 @@ function MortgageVsInvestPanel({
           />
         </label>
 
-        <label>
+        <label className="mortgage-base-field">
           Hybrid mortgage share (%)
           <input
             type="number"
@@ -372,7 +372,10 @@ function MortgageVsInvestPanel({
         {
           returnScenarios.map(
             (value, index) => (
-              <label key={index}>
+              <label
+                className="mortgage-return-field"
+                key={index}
+              >
                 {[
                   'Low',
                   'Expected',
