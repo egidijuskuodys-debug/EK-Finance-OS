@@ -134,14 +134,20 @@ def compare_mortgage_vs_invest(
         get_db
     ),
 ):
-    comparison = (
-        mortgage_vs_invest_service
-        .get_mortgage_vs_invest(
-            db=db,
-            property_id=property_id,
-            request=request,
+    try:
+        comparison = (
+            mortgage_vs_invest_service
+            .get_mortgage_vs_invest(
+                db=db,
+                property_id=property_id,
+                request=request,
+            )
         )
-    )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(exc),
+        ) from exc
 
     if comparison is None:
         raise HTTPException(

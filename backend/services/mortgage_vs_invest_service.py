@@ -134,16 +134,6 @@ def simulate_strategy(
                 amount_due,
             )
 
-            if (
-                month_number
-                == remaining_months
-                and actual_mortgage_payment
-                < amount_due
-            ):
-                actual_mortgage_payment = (
-                    amount_due
-                )
-
             principal_amount = max(
                 actual_mortgage_payment
                 - interest_amount,
@@ -180,6 +170,7 @@ def simulate_strategy(
         )
 
     return {
+        "remaining_balance": balance,
         "payoff_months": (
             payoff_months
         ),
@@ -267,6 +258,13 @@ def get_mortgage_vs_invest(
         ),
         annual_investment_return=0.0,
     )
+
+    if baseline["remaining_balance"] > 0.005:
+        raise ValueError(
+            "The recorded monthly mortgage payment does not repay "
+            "the loan by the comparison end date. Update the loan "
+            "balance, interest rate, monthly payment or end date."
+        )
 
     baseline_interest = float(
         baseline["interest_paid"]
