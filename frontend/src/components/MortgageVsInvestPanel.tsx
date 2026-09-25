@@ -144,6 +144,11 @@ function MortgageVsInvestPanel({
   ] = useState('50')
 
   const [
+    returnScenarios,
+    setReturnScenarios,
+  ] = useState(['5', '7', '9'])
+
+  const [
     result,
     setResult,
   ] = useState<
@@ -166,9 +171,11 @@ function MortgageVsInvestPanel({
   async function calculate(
     amount: number,
     percentage: number,
+    annualReturns: number[],
   ) {
     setLoading(true)
     setError(null)
+    setResult(null)
 
     try {
       const response = (
@@ -181,11 +188,9 @@ function MortgageVsInvestPanel({
             hybrid_mortgage_percentage: (
               percentage
             ),
-            annual_investment_returns: [
-              5,
-              7,
-              9,
-            ],
+            annual_investment_returns: (
+              annualReturns
+            ),
           },
         )
       )
@@ -211,6 +216,7 @@ function MortgageVsInvestPanel({
     calculate(
       700,
       50,
+      [5, 7, 9],
     )
   }, [propertyId])
 
@@ -226,6 +232,10 @@ function MortgageVsInvestPanel({
 
     const percentage = Number(
       hybridPercentage,
+    )
+
+    const annualReturns = (
+      returnScenarios.map(Number)
     )
 
     if (
@@ -253,9 +263,42 @@ function MortgageVsInvestPanel({
       return
     }
 
+    if (
+      returnScenarios.some(
+        (value) => value.trim() === '',
+      )
+      || annualReturns.some(
+        (value) => (
+          !Number.isFinite(value)
+          || value <= -100
+          || value > 100
+        ),
+      )
+    ) {
+      setError(
+        'Enter three annual returns '
+        + 'between -100% and 100%.',
+      )
+
+      return
+    }
+
+    if (
+      annualReturns[0] >= annualReturns[1]
+      || annualReturns[1] >= annualReturns[2]
+    ) {
+      setError(
+        'Enter returns in ascending order: '
+        + 'low, expected, high.',
+      )
+
+      return
+    }
+
     calculate(
       amount,
       percentage,
+      annualReturns,
     )
   }
 
@@ -325,6 +368,39 @@ function MortgageVsInvestPanel({
             }
           />
         </label>
+
+        {
+          returnScenarios.map(
+            (value, index) => (
+              <label key={index}>
+                {[
+                  'Low',
+                  'Expected',
+                  'High',
+                ][index]} ETF return (%)
+                <input
+                  type="number"
+                  min="-99.99"
+                  max="100"
+                  step="0.01"
+                  required
+                  value={value}
+                  onChange={(event) => {
+                    setReturnScenarios(
+                      (current) => current.map(
+                        (item, itemIndex) => (
+                          itemIndex === index
+                            ? event.target.value
+                            : item
+                        ),
+                      ),
+                    )
+                  }}
+                />
+              </label>
+            ),
+          )
+        }
 
         <button
           className="target-primary-button"
