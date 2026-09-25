@@ -186,6 +186,62 @@ def simulate_strategy(
     }
 
 
+def find_break_even_return(
+    *,
+    loan_balance: float,
+    annual_interest_rate: float,
+    remaining_months: int,
+    calculation_date: date,
+    loan_end_date: date,
+    monthly_payment: float,
+    monthly_extra_amount: float,
+) -> float | None:
+    if loan_balance <= 0:
+        return None
+
+    total_budget = monthly_payment + monthly_extra_amount
+
+    def difference(annual_return: float) -> float:
+        common = dict(
+            loan_balance=loan_balance,
+            annual_interest_rate=annual_interest_rate,
+            remaining_months=remaining_months,
+            calculation_date=calculation_date,
+            loan_end_date=loan_end_date,
+            total_monthly_budget=total_budget,
+            annual_investment_return=annual_return,
+        )
+        invest = simulate_strategy(
+            **common,
+            desired_mortgage_payment=monthly_payment,
+        )
+        repay = simulate_strategy(
+            **common,
+            desired_mortgage_payment=total_budget,
+        )
+        return invest["investment_value"] - repay["investment_value"]
+
+    low, high = 0.0, 100.0
+    low_difference = difference(low)
+    high_difference = difference(high)
+
+    if abs(high_difference - low_difference) < 0.005:
+        return None
+    if low_difference >= -0.005:
+        return 0.0
+    if high_difference <= 0:
+        return None
+
+    for _ in range(35):
+        middle = (low + high) / 2
+        if difference(middle) < 0:
+            low = middle
+        else:
+            high = middle
+
+    return round((low + high) / 2, 2)
+
+
 def get_mortgage_vs_invest(
     db: Session,
     property_id: int,
@@ -287,6 +343,16 @@ def get_mortgage_vs_invest(
     total_monthly_budget = (
         monthly_payment
         + monthly_extra_amount
+    )
+
+    break_even_return = find_break_even_return(
+        loan_balance=loan_balance,
+        annual_interest_rate=annual_interest_rate,
+        remaining_months=remaining_months,
+        calculation_date=calculation_date,
+        loan_end_date=comparison_end_date,
+        monthly_payment=monthly_payment,
+        monthly_extra_amount=monthly_extra_amount,
     )
 
     comparisons = []
@@ -639,6 +705,7 @@ def get_mortgage_vs_invest(
         "comparison_end_date": (
             comparison_end_date
         ),
+        "break_even_annual_return": break_even_return,
         "baseline": {
             "loan_balance": round(
                 loan_balance,

@@ -1,20 +1,20 @@
 import unittest
+from datetime import date
 from types import SimpleNamespace
 from unittest.mock import patch
 
 from schemas.mortgage_vs_invest import MortgageVsInvestRequest
 from services.mortgage_vs_invest_service import add_months, get_mortgage_vs_invest
-from datetime import date
 
 
 class MortgageVsInvestTests(unittest.TestCase):
-    def compare(self, monthly_payment):
+    def compare(self, monthly_payment, interest_rate=0, loan_balance=1200):
         property_record = SimpleNamespace(
             id=1,
             name="Apartment",
             currency="EUR",
-            loan_balance=1200,
-            interest_rate=0,
+            loan_balance=loan_balance,
+            interest_rate=interest_rate,
             monthly_payment=monthly_payment,
             loan_end_date=add_months(date.today(), 12),
         )
@@ -40,6 +40,18 @@ class MortgageVsInvestTests(unittest.TestCase):
             comparison["comparisons"][0]["invest_only"]["interest_paid"],
             0,
         )
+
+    def test_break_even_matches_mortgage_rate_without_fees(self):
+        comparison = self.compare(monthly_payment=110, interest_rate=4)
+        self.assertAlmostEqual(
+            comparison["break_even_annual_return"],
+            4,
+            delta=0.05,
+        )
+
+    def test_no_break_even_without_outstanding_loan(self):
+        comparison = self.compare(monthly_payment=0, loan_balance=0)
+        self.assertIsNone(comparison["break_even_annual_return"])
 
 
 if __name__ == "__main__":

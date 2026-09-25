@@ -525,6 +525,31 @@ function MortgageVsInvestPanel({
 
 
                 {
+                  result.break_even_annual_return !== null
+                    ? (
+                        <div className="mortgage-break-even">
+                          <strong>
+                            Ribinė ETF grąža:{' '}
+                            {
+                              formatPercent(
+                                result.break_even_annual_return,
+                              )
+                            }
+                          </strong>
+                          <p>
+                            Esant maždaug tokiai nominaliai
+                            metinei grąžai, papildomas investavimas
+                            ir spartesnis paskolos grąžinimas
+                            palyginimo dieną duotų vienodą vertę.
+                            Mokesčiai ir rinkliavos neįtraukti.
+                          </p>
+                        </div>
+                      )
+                    : null
+                }
+
+
+                {
                   result.comparisons.map(
                     (
                       comparison,

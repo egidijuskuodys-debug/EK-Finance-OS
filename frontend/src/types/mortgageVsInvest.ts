@@ -57,6 +57,7 @@ export interface MortgageVsInvestResponse {
 
   calculation_date: string
   comparison_end_date: string
+  break_even_annual_return: number | null
 
   baseline: MortgageBaseline
 

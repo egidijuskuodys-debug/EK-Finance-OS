@@ -92,6 +92,7 @@ class MortgageVsInvestResponse(
 
     calculation_date: date
     comparison_end_date: date
+    break_even_annual_return: float | None
 
     baseline: MortgageBaseline
 
