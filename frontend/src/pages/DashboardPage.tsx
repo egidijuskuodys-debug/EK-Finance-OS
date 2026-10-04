@@ -5,6 +5,7 @@
 
 import { getDashboard } from '../api/dashboard'
 import FinancialIndependencePanel from '../components/FinancialIndependencePanel'
+import FinancialPlanPanel from '../components/FinancialPlanPanel'
 import NetWorthProjectionPanel from '../components/NetWorthProjectionPanel'
 import PortfolioActionsPanel from '../components/PortfolioActionsPanel'
 import PortfolioHealthPanel from '../components/PortfolioHealthPanel'
@@ -843,6 +844,8 @@ function DashboardPage() {
       <PortfolioHealthPanel />
             <NetWorthProjectionPanel />
                   <FinancialIndependencePanel />
+
+      <FinancialPlanPanel />
 
 
       <PortfolioActionsPanel />
