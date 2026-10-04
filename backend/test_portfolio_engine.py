@@ -1,6 +1,7 @@
 from datetime import date
 
 import pytest
+from pydantic import ValidationError
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
@@ -79,12 +80,14 @@ def make_transaction(
     quantity: float,
     price: float,
     transaction_date: date,
+    commission: float = 0,
 ):
     return TransactionCreate(
         investment_id=investment_id,
         transaction_type=transaction_type,
         quantity=quantity,
         price=price,
+        commission=commission,
         currency="EUR",
         transaction_date=transaction_date,
     )
@@ -164,6 +167,41 @@ def test_multiple_buys_calculate_average_cost(
     )
 
 
+def test_buy_commission_is_included_in_cost_basis(
+    db,
+    investment,
+):
+    transaction = create_transaction(
+        db,
+        make_transaction(
+            investment.id,
+            "BUY",
+            10,
+            100,
+            date(
+                2026,
+                1,
+                10,
+            ),
+            commission=10,
+        ),
+    )
+
+    db.refresh(investment)
+
+    assert transaction.commission == pytest.approx(
+        10
+    )
+
+    assert investment.quantity == pytest.approx(
+        10
+    )
+
+    assert investment.purchase_price == pytest.approx(
+        101
+    )
+
+
 def test_sell_uses_fifo_and_calculates_realized_profit(
     db,
     investment,
@@ -231,6 +269,80 @@ def test_sell_uses_fifo_and_calculates_realized_profit(
     assert investment.purchase_price == pytest.approx(
         120
     )
+
+
+def test_sell_commission_reduces_realized_profit(
+    db,
+    investment,
+):
+    create_transaction(
+        db,
+        make_transaction(
+            investment.id,
+            "BUY",
+            10,
+            100,
+            date(
+                2026,
+                1,
+                10,
+            ),
+        ),
+    )
+
+    sell = create_transaction(
+        db,
+        make_transaction(
+            investment.id,
+            "SELL",
+            10,
+            120,
+            date(
+                2026,
+                2,
+                1,
+            ),
+            commission=10,
+        ),
+    )
+
+    db.refresh(investment)
+
+    assert sell.commission == pytest.approx(
+        10
+    )
+
+    assert sell.realized_profit == pytest.approx(
+        190
+    )
+
+    assert investment.quantity == pytest.approx(
+        0
+    )
+
+    assert investment.purchase_price == pytest.approx(
+        0
+    )
+
+
+def test_negative_commission_is_rejected(
+    investment,
+):
+    with pytest.raises(
+        ValidationError,
+    ):
+        make_transaction(
+            investment.id,
+            "BUY",
+            10,
+            100,
+            date(
+                2026,
+                1,
+                10,
+            ),
+            commission=-1,
+        )
 
 
 def test_cannot_sell_more_than_owned(

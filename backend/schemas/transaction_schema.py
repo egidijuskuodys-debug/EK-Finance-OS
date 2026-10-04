@@ -38,6 +38,11 @@ class TransactionCreate(BaseModel):
         ge=0,
     )
 
+    commission: float = Field(
+        default=0,
+        ge=0,
+    )
+
     currency: str = Field(
         default="EUR",
         min_length=3,
