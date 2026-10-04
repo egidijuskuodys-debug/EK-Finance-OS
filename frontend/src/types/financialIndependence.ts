@@ -1,6 +1,10 @@
 export interface FinancialIndependencePoint {
   year: number
+
+  investment_value: number
+  real_estate_equity: number
   net_worth: number
+
   monthly_passive_income: number
   target_reached: boolean
 }
@@ -14,7 +18,9 @@ export interface FinancialIndependence {
   withdrawal_rate_percent: number
   required_capital: number
 
+  current_fi_capital: number
   current_net_worth: number
+  current_real_estate_equity: number
   current_monthly_passive_income: number
 
   remaining_gap: number

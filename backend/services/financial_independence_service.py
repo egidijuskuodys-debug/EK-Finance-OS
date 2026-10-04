@@ -44,27 +44,39 @@ def get_financial_independence_projection(
         )
     )
 
+    current_fi_capital = float(
+        net_worth_projection[
+            "starting_investment_value"
+        ]
+    )
+
     current_net_worth = float(
         net_worth_projection[
             "starting_net_worth"
         ]
     )
 
+    current_real_estate_equity = float(
+        net_worth_projection[
+            "starting_real_estate_equity"
+        ]
+    )
+
     current_monthly_passive_income = (
-        current_net_worth
+        current_fi_capital
         * withdrawal_rate
         / 12
     )
 
     remaining_gap = max(
         required_capital
-        - current_net_worth,
+        - current_fi_capital,
         0.0,
     )
 
     progress_percent = min(
         (
-            current_net_worth
+            current_fi_capital
             / required_capital
             * 100
         ),
@@ -85,18 +97,26 @@ def get_financial_independence_projection(
             point["year"]
         )
 
+        investment_value = float(
+            point["investment_value"]
+        )
+
+        real_estate_equity = float(
+            point["real_estate_equity"]
+        )
+
         net_worth = float(
             point["net_worth"]
         )
 
         monthly_passive_income = (
-            net_worth
+            investment_value
             * withdrawal_rate
             / 12
         )
 
         target_reached = (
-            net_worth
+            investment_value
             >= required_capital
         )
 
@@ -114,6 +134,14 @@ def get_financial_independence_projection(
         yearly_projection.append(
             {
                 "year": year,
+                "investment_value": round(
+                    investment_value,
+                    2,
+                ),
+                "real_estate_equity": round(
+                    real_estate_equity,
+                    2,
+                ),
                 "net_worth": round(
                     net_worth,
                     2,
@@ -152,8 +180,16 @@ def get_financial_independence_projection(
             required_capital,
             2,
         ),
+        "current_fi_capital": round(
+            current_fi_capital,
+            2,
+        ),
         "current_net_worth": round(
             current_net_worth,
+            2,
+        ),
+        "current_real_estate_equity": round(
+            current_real_estate_equity,
             2,
         ),
         "current_monthly_passive_income": (

@@ -122,8 +122,8 @@ function FinancialIndependencePanel() {
       } else {
         setError(
           (
-            'Failed to load financial '
-            + 'independence projection.'
+            'Nepavyko įkelti finansinės '
+            + 'nepriklausomybės prognozės.'
           ),
         )
       }
@@ -193,7 +193,7 @@ function FinancialIndependencePanel() {
       || age > 120
     ) {
       setError(
-        'Enter valid projection assumptions.',
+        'Įveskite tinkamas prognozės reikšmes.',
       )
 
       return
@@ -238,12 +238,12 @@ function FinancialIndependencePanel() {
       <div className="panel-header">
         <div>
           <h3 className="panel-title">
-            Financial independence
+            Finansinė nepriklausomybė
           </h3>
 
           <p className="panel-subtitle">
-            Estimate when passive income
-            can reach your monthly target
+            Prognozė, kada investicinis kapitalas
+            gali pasiekti tavo pasyvių pajamų tikslą
           </p>
         </div>
       </div>
@@ -254,7 +254,7 @@ function FinancialIndependencePanel() {
         onSubmit={calculateProjection}
       >
         <label>
-          Monthly income target
+          Mėnesio pajamų tikslas
           <input
             type="number"
             min="1"
@@ -273,7 +273,7 @@ function FinancialIndependencePanel() {
         </label>
 
         <label>
-          Withdrawal rate (%)
+          Išėmimo norma (%)
           <input
             type="number"
             min="0.1"
@@ -293,7 +293,7 @@ function FinancialIndependencePanel() {
         </label>
 
         <label>
-          Monthly investment
+          Mėnesio investicija
           <input
             type="number"
             min="0"
@@ -312,7 +312,7 @@ function FinancialIndependencePanel() {
         </label>
 
         <label>
-          Investment return (%)
+          Investicijų grąža (%)
           <input
             type="number"
             min="-99"
@@ -332,7 +332,7 @@ function FinancialIndependencePanel() {
         </label>
 
         <label>
-          Property growth (%)
+          NT vertės augimas (%)
           <input
             type="number"
             min="-99"
@@ -352,7 +352,7 @@ function FinancialIndependencePanel() {
         </label>
 
         <label>
-          Current age
+          Dabartinis amžius
           <input
             type="number"
             min="0"
@@ -378,8 +378,8 @@ function FinancialIndependencePanel() {
         >
           {
             loading
-              ? 'Calculating...'
-              : 'Calculate FI goal'
+              ? 'Skaičiuojama...'
+              : 'Apskaičiuoti FI tikslą'
           }
         </button>
       </form>
@@ -403,7 +403,7 @@ function FinancialIndependencePanel() {
                 <section className="kpi-grid">
                   <article className="kpi-card">
                     <div className="kpi-label">
-                      Required capital
+                      Reikalingas FI kapitalas
                     </div>
 
                     <div className="kpi-value">
@@ -423,13 +423,35 @@ function FinancialIndependencePanel() {
                             .monthly_income_target,
                           projection.currency,
                         )
-                      } monthly target
+                      } per mėnesį
                     </div>
                   </article>
 
+
                   <article className="kpi-card">
                     <div className="kpi-label">
-                      Current passive income
+                      Dabartinis FI kapitalas
+                    </div>
+
+                    <div className="kpi-value">
+                      {
+                        formatCurrency(
+                          projection
+                            .current_fi_capital,
+                          projection.currency,
+                        )
+                      }
+                    </div>
+
+                    <div className="kpi-subvalue">
+                      Investicinis portfelis
+                    </div>
+                  </article>
+
+
+                  <article className="kpi-card">
+                    <div className="kpi-label">
+                      Dabartinės pasyvios pajamos
                     </div>
 
                     <div className="kpi-value">
@@ -443,18 +465,19 @@ function FinancialIndependencePanel() {
                     </div>
 
                     <div className="kpi-subvalue">
-                      At {
+                      Taikant {
                         formatPercent(
                           projection
                             .withdrawal_rate_percent,
                         )
-                      } withdrawal rate
+                      } išėmimo normą
                     </div>
                   </article>
 
+
                   <article className="kpi-card">
                     <div className="kpi-label">
-                      Progress
+                      FI progresas
                     </div>
 
                     <div className="kpi-value positive">
@@ -467,7 +490,7 @@ function FinancialIndependencePanel() {
                     </div>
 
                     <div className="kpi-subvalue">
-                      Gap:{' '}
+                      Trūksta:{' '}
                       {
                         formatCurrency(
                           projection
@@ -478,9 +501,10 @@ function FinancialIndependencePanel() {
                     </div>
                   </article>
 
+
                   <article className="kpi-card">
                     <div className="kpi-label">
-                      Estimated goal
+                      Prognozuojamas FI tikslas
                     </div>
 
                     <div className="kpi-value positive">
@@ -489,9 +513,9 @@ function FinancialIndependencePanel() {
                         !== null
                           ? (
                               `${projection
-                                .years_to_goal} years`
+                                .years_to_goal} metų`
                             )
-                          : 'Beyond projection'
+                          : 'Už prognozės ribų'
                       }
                     </div>
 
@@ -501,16 +525,56 @@ function FinancialIndependencePanel() {
                           .projected_age_at_goal
                         !== null
                           ? (
-                              `Age ${
-                                projection
-                                  .projected_age_at_goal
-                              }`
+                              `${projection
+                                .projected_age_at_goal} metų amžiaus`
                             )
                           : (
-                              'Goal not reached '
-                              + 'within 15 years'
+                              'Tikslas nepasiekiamas '
+                              + 'per 15 metų'
                             )
                       }
+                    </div>
+                  </article>
+
+
+                  <article className="kpi-card">
+                    <div className="kpi-label">
+                      NT nuosavas kapitalas
+                    </div>
+
+                    <div className="kpi-value">
+                      {
+                        formatCurrency(
+                          projection
+                            .current_real_estate_equity,
+                          projection.currency,
+                        )
+                      }
+                    </div>
+
+                    <div className="kpi-subvalue">
+                      Neįtraukiamas į 4 % FI kapitalą
+                    </div>
+                  </article>
+
+
+                  <article className="kpi-card">
+                    <div className="kpi-label">
+                      Bendras grynasis turtas
+                    </div>
+
+                    <div className="kpi-value">
+                      {
+                        formatCurrency(
+                          projection
+                            .current_net_worth,
+                          projection.currency,
+                        )
+                      }
+                    </div>
+
+                    <div className="kpi-subvalue">
+                      Investicijos + NT equity
                     </div>
                   </article>
                 </section>
@@ -519,7 +583,7 @@ function FinancialIndependencePanel() {
                 <div className="allocation-list">
                   <div className="allocation-row">
                     <div className="allocation-name">
-                      FI progress
+                      FI progresas
                     </div>
 
                     <div className="allocation-track">
@@ -551,7 +615,15 @@ function FinancialIndependencePanel() {
                     <thead>
                       <tr>
                         <th>
-                          Period
+                          Laikotarpis
+                        </th>
+
+                        <th className="number">
+                          FI kapitalas
+                        </th>
+
+                        <th className="number">
+                          NT equity
                         </th>
 
                         <th className="number">
@@ -559,11 +631,11 @@ function FinancialIndependencePanel() {
                         </th>
 
                         <th className="number">
-                          Monthly passive income
+                          Pasyvios pajamos / mėn.
                         </th>
 
                         <th>
-                          Status
+                          Būsena
                         </th>
                       </tr>
                     </thead>
@@ -579,8 +651,28 @@ function FinancialIndependencePanel() {
                                 {
                                   point.year
                                   === 0
-                                    ? 'Today'
-                                    : `${point.year} years`
+                                    ? 'Šiandien'
+                                    : `${point.year} metų`
+                                }
+                              </td>
+
+                              <td className="number">
+                                {
+                                  formatCurrency(
+                                    point
+                                      .investment_value,
+                                    projection.currency,
+                                  )
+                                }
+                              </td>
+
+                              <td className="number">
+                                {
+                                  formatCurrency(
+                                    point
+                                      .real_estate_equity,
+                                    projection.currency,
+                                  )
                                 }
                               </td>
 
@@ -612,8 +704,8 @@ function FinancialIndependencePanel() {
                               >
                                 {
                                   point.target_reached
-                                    ? 'Target reached'
-                                    : 'Building wealth'
+                                    ? 'FI tikslas pasiektas'
+                                    : 'Kapitalas kaupiamas'
                                 }
                               </td>
                             </tr>
@@ -623,6 +715,17 @@ function FinancialIndependencePanel() {
                     </tbody>
                   </table>
                 </div>
+
+
+                <p className="contribution-note">
+                  FI skaičiavime 4 % išėmimo norma
+                  taikoma investiciniam portfeliui.
+                  NT nuosavas kapitalas rodomas kaip
+                  bendro grynojo turto dalis, tačiau
+                  nėra laikomas likvidžiu FI kapitalu.
+                  Nuomos pajamos šiame skaičiavime
+                  kol kas neįtraukiamos.
+                </p>
               </>
             )
           : null

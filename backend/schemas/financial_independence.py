@@ -5,7 +5,11 @@ class FinancialIndependencePoint(
     BaseModel
 ):
     year: int
+
+    investment_value: float
+    real_estate_equity: float
     net_worth: float
+
     monthly_passive_income: float
     target_reached: bool
 
@@ -20,7 +24,9 @@ class FinancialIndependenceResponse(
     withdrawal_rate_percent: float
     required_capital: float
 
+    current_fi_capital: float
     current_net_worth: float
+    current_real_estate_equity: float
     current_monthly_passive_income: float
 
     remaining_gap: float
