@@ -29,6 +29,9 @@ from routers.dashboard_router import (
 from routers.dividend_router import (
     router as dividend_router,
 )
+from routers.financial_plan_router import (
+    router as financial_plan_router,
+)
 from routers.import_history_router import (
     router as import_history_router,
 )
@@ -133,4 +136,8 @@ app.include_router(
 
 app.include_router(
     real_estate_router
+)
+
+app.include_router(
+    financial_plan_router
 )
