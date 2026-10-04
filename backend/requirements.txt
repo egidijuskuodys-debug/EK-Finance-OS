@@ -8,3 +8,4 @@ alembic
 yfinance
 python-multipart
 pymupdf
+pytest
